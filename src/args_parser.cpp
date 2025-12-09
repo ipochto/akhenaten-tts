@@ -44,18 +44,21 @@ void parseCmdLineArguments(int argc, char* argv[], TTSConfig &config)
 		}
 	} else {
 		fmt::println("Input file is required (--input)");
+		exit(1);
 	}
 
 	if (parsed.count("output")) {
 		config.outputDir = fs::absolute(parsed["output"].as<fs::path>()).lexically_normal();
 	} else {
 		fmt::println("Output dir is required (--output)");
+		exit(1);
 	}
 
 	if (parsed.count("lang")) {
 		config.lang = parsed["lang"].as<std::string>();
 	} else {
 		fmt::println("Lang is required (--lang)");
+		exit(1);
 	}
 
 	if (parsed.count("voice")) {
@@ -68,6 +71,7 @@ void parseCmdLineArguments(int argc, char* argv[], TTSConfig &config)
 		}
 	} else {
 		fmt::println("Voice model file is required (--voice)");
+		exit(1);
 	}
 
 	if (parsed.count("voice-cfg")) {
@@ -80,17 +84,19 @@ void parseCmdLineArguments(int argc, char* argv[], TTSConfig &config)
 		}
 	} else {
 		fmt::println("Voice model configuration file is required (--voice-cfg)");
+		exit(1);
 	}
 
-	if (parsed.count("espeak-data")) {
-		const auto espeakDataDir = fs::absolute(parsed["espeak-data"].as<fs::path>()).lexically_normal();
-		if (fs::exists(espeakDataDir)) {
-			config.espeakData = espeakDataDir;
-		} else {
-			fmt::println("espeak-ng data directory is unavailable: \"{}\"", espeakDataDir.string());
-			exit(1);
-		}
+	if (const auto espeakDataDir 
+			= fs::absolute(parsed.count("espeak-data") ? parsed["espeak-data"].as<fs::path>()
+													   : config.espeakData).lexically_normal();
+		fs::exists(espeakDataDir)) {
+
+		config.espeakData = espeakDataDir;
+
 	} else {
-		fmt::println("espeak-ng data directory is required (--espeak-data)");
+		fmt::println("espeak-ng data directory is unavailable: \"{}\"",
+					 espeakDataDir.lexically_normal().string());
+		exit(1);
 	}
 }

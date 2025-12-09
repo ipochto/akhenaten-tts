@@ -10,6 +10,6 @@ struct TTSConfig
 	fs::path outputDir;
 	fs::path voiceModel;
 	fs::path voiceCfg;
-	fs::path espeakData;
+	fs::path espeakData {"espeak-ng-data"};
 	std::string lang;
 };
