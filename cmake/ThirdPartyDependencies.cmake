@@ -21,3 +21,5 @@ if (NOT fmt_FOUND)
     )
     FetchContent_MakeAvailable(fmt)
 endif()
+
+include(Libpiper)
