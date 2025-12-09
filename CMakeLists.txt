@@ -33,42 +33,63 @@ set(app_libraries
 )
 
 add_executable(${app})
+
 target_sources(${app} PRIVATE
     ${app_sources} 
     ${app_headers}
 )
-target_include_directories(${app} PUBLIC ${app_include_dirs})
 
+target_include_directories(${app} PUBLIC ${app_include_dirs})
 target_compile_features(${app} PRIVATE cxx_std_17)
 target_link_libraries(${app} PUBLIC ${app_libraries})
 
-set(is_gcc "$<CXX_COMPILER_ID:GNU>")
-set(is_clang "$<CXX_COMPILER_ID:Clang>")
-set(is_msvc "$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>")
 
-target_compile_definitions(${app} PUBLIC
-    $<$<CONFIG:Debug>:DEBUG>
-    $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
-)
+# Debug vs Release definitions
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(${app} PUBLIC DEBUG)
+else()
+    target_compile_definitions(${app} PUBLIC NDEBUG)
+endif()
 
-target_compile_options(${app} PRIVATE 
-    # Linux
-    $<$<AND:$<PLATFORM_ID:Linux>,$<CONFIG:Debug>>:
+# Compiler detection
+set(is_gcc   ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+set(is_clang ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+set(is_msvc  ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+
+# Handle Clang in MSVC compatibility mode (clang-cl)
+if(is_clang AND CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
+    set(is_msvc TRUE)
+endif()
+
+# Platform- and config-specific compile options
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(${app} PRIVATE
         -fno-inline
         -fstack-protector-strong
         -fno-omit-frame-pointer
-        -Wall -Wextra -Wpedantic -Wreorder
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wreorder
         -Wwrite-strings
-        $<${is_gcc}: -ggdb>
-        $<${is_clang}: -glldb>
-    >
+    )
+    if(is_gcc)
+        target_compile_options(${app} PRIVATE -ggdb)
+    elseif(is_clang)
+        target_compile_options(${app} PRIVATE -glldb)
+    endif()
+endif()
 
-    # Windows
-    $<$<AND:$<PLATFORM_ID:Windows>,$<CONFIG:Debug>,${is_msvc}>:
-        /Oy-
-        /W4
-        /permissive-
-        /Zc:strictStrings
-    >
-    $<$<CXX_COMPILER_ID:MSVC>:/MP>    
-)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND is_msvc)
+        target_compile_options(${app} PRIVATE
+            /Oy-
+            /W4
+            /permissive-
+            /Zc:strictStrings
+        )
+    endif()
+    if(is_msvc)
+        target_compile_options(${app} PRIVATE /MP)
+    endif()
+endif()
