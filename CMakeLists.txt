@@ -13,8 +13,9 @@ endif()
 include(ThirdPartyDependencies)
 
 set(app_sources
-    src/args_parser.cpp    
+    src/args_parser.cpp
     src/main.cpp
+    src/tts.cpp
 )
 set(app_headers
     src/tts.hpp

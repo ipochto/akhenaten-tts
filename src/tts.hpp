@@ -1,6 +1,8 @@
 #pragma once
 
 #include <filesystem>
+#include <fmt/base.h>
+#include <piper.h>
 
 namespace fs = std::filesystem;
 
@@ -12,6 +14,35 @@ struct TTSConfig
 	fs::path voiceModelCfg;
 	fs::path espeakData {"espeak-ng-data"};
 	std::string lang;
+};
+
+class TTS
+{
+public:
+	TTS(const TTSConfig &config)
+	{
+		synth = piper_create(config.voiceModel.c_str(), 
+							 config.voiceModelCfg.c_str(), 
+							 config.espeakData.c_str());
+		if (!synth) {
+			fmt::println("Failed to create Piper synthesizer");
+			exit (1);
+		}
+		options = piper_default_synthesize_options(synth);
+	}
+	~TTS()
+	{
+		piper_free(synth);
+	}
+
+	void synthesizeWAV(const std::string &text, fs::path &filename);
+
+private:
+	
+
+private:
+	piper_synthesizer *synth;
+	piper_synthesize_options options;
 };
 
 
