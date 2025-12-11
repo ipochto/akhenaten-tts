@@ -15,9 +15,11 @@ include(ThirdPartyDependencies)
 set(app_sources
     src/args_parser.cpp
     src/main.cpp
+    src/script_parser.cpp
     src/tts.cpp
 )
 set(app_headers
+    src/script_parser.hpp
     src/tts.hpp
 )
 
@@ -31,6 +33,8 @@ set(app_libraries
     fmt::fmt
     libpiper
     libpiper_onnx
+    lua::lua51
+    sol2::sol2
 )
 
 add_executable(${app})

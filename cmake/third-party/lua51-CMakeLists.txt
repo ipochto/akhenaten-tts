@@ -1,0 +1,73 @@
+cmake_minimum_required(VERSION 3.30)
+project(lua51 LANGUAGES C)
+
+set(lua_src
+    src/lapi.c
+    src/lcode.c
+    src/ldebug.c
+    src/ldo.c
+    src/ldump.c
+    src/lfunc.c
+    src/lgc.c
+    src/llex.c
+    src/lmem.c
+    src/lobject.c
+    src/lopcodes.c
+    src/lparser.c
+    src/lstate.c
+    src/lstring.c
+    src/ltable.c
+    src/ltm.c
+    src/lundump.c
+    src/lvm.c
+    src/lzio.c
+    src/lauxlib.c
+    src/lbaselib.c
+    src/ldblib.c
+    src/liolib.c
+    src/lmathlib.c
+    src/loslib.c
+    src/ltablib.c
+    src/lstrlib.c
+    src/loadlib.c
+    src/linit.c
+)
+set(lua51_lib_dir "${PROJECT_BINARY_DIR}/lib")
+set(lua51_include_dir "${PROJECT_BINARY_DIR}/include")
+
+set(lua_headers
+    "${PROJECT_SOURCE_DIR}/src/lua.h"
+    "${PROJECT_SOURCE_DIR}/src/luaconf.h"
+    "${PROJECT_SOURCE_DIR}/src/lualib.h"
+    "${PROJECT_SOURCE_DIR}/src/lauxlib.h"
+)
+file(COPY ${lua_headers} DESTINATION "${lua51_include_dir}")
+
+file(WRITE "${lua51_include_dir}/lua.hpp"
+    "/* Auto-generated lua.hpp for C++ */\n\n"
+    "#pragma once\n\n"
+    "extern \"C\" {\n"
+    "    #include \"lua.h\"\n"
+    "    #include \"lualib.h\"\n"
+    "    #include \"lauxlib.h\"\n"
+    "}\n"
+)
+
+add_library(lua51_static STATIC ${lua_src})
+set_target_properties(lua51_static PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${lua51_lib_dir}"
+    OUTPUT_NAME "lua51"
+    LINKER_LANGUAGE C
+)
+target_compile_options(lua51_static PRIVATE "$<$<CONFIG:Release>:-O2>")
+target_include_directories(lua51_static INTERFACE "${lua51_include_dir}")
+
+if(UNIX)
+    target_compile_definitions(lua51_static PUBLIC
+        LUA_USE_DLOPEN
+        LUA_USE_MKSTEMP
+    )
+    target_link_libraries(lua51_static PUBLIC ${CMAKE_DL_LIBS})
+endif()
+
+add_library(lua::lua51 ALIAS lua51_static)
