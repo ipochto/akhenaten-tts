@@ -11,6 +11,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 include(ThirdPartyDependencies)
+include(CopyScripts)
 
 set(app_sources
     src/args_parser.cpp

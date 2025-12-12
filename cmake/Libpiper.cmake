@@ -57,16 +57,65 @@ set_target_properties(libpiper_onnx PROPERTIES
 add_dependencies(libpiper piper_ext)
 add_dependencies(libpiper_onnx piper_ext)
 
-set(TARGET_ASSETS_DIR ${CMAKE_BINARY_DIR}/bin/espeak-ng-data)
-set(PIPER_ASSETS_DIR ${PIPER_INSTALL_DIR}/espeak-ng-data)
+set(PIPER_ASSETS_SRCDIR ${PIPER_INSTALL_DIR}/espeak-ng-data)
+set(PIPER_ASSETS_DSTDIR ${CMAKE_BINARY_DIR}/bin/espeak-ng-data)
 
 # Copy espeak-ng-data to ${app} binary dir
 add_custom_command(
-    OUTPUT ${TARGET_ASSETS_DIR}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${TARGET_ASSETS_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PIPER_ASSETS_DIR} ${TARGET_ASSETS_DIR}
+    OUTPUT ${PIPER_ASSETS_DSTDIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${PIPER_ASSETS_DSTDIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PIPER_ASSETS_SRCDIR} ${PIPER_ASSETS_DSTDIR}
     DEPENDS piper_ext
     COMMENT "Copying Piper assets to bin/"
 )
 
-add_custom_target(copy_piper_assets ALL DEPENDS ${TARGET_ASSETS_DIR})
+add_custom_target(copy_piper_assets ALL DEPENDS ${PIPER_ASSETS_DSTDIR})
+
+# Copy Voice Models to ${app} binary dir
+set(VOICE_FILES
+    "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/arctic/medium/en_US-arctic-medium.onnx"
+)
+set(VOICES_DST_DIR "${CMAKE_BINARY_DIR}/bin/voices")
+
+foreach(voice_url IN LISTS VOICE_FILES)
+
+    get_filename_component(filename "${voice_url}" NAME)
+
+    string(REGEX MATCH "piper-voices/resolve/main/(.+)" _match "${voice_url}")
+    if(CMAKE_MATCH_1)
+        set(rel_path "${CMAKE_MATCH_1}")
+        set(dest_file "${VOICES_DST_DIR}/${rel_path}")
+        get_filename_component(dest_dir "${dest_file}" DIRECTORY)
+    else()
+        set(dest_file "${VOICES_DST_DIR}/${filename}")
+        set(dest_dir "${VOICES_DST_DIR}")
+    endif()
+
+    # Download voice model
+    add_custom_command(
+        OUTPUT "${dest_file}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${dest_dir}"
+        COMMAND ${CMAKE_COMMAND}
+            -D URL=${voice_url}
+            -D DEST=${dest_file}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/download_file.cmake
+        COMMENT "Downloading ${filename}..."
+    )
+
+    list(APPEND DOWNLOADED_VOICES "${dest_file}")
+
+    # Download voice model config file
+    add_custom_command(
+        OUTPUT "${dest_file}.json"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${dest_dir}"
+        COMMAND ${CMAKE_COMMAND}
+            -D URL=${voice_url}.json
+            -D DEST=${dest_file}.json
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/download_file.cmake
+        COMMENT "Downloading ${filename}..."
+    )
+
+    list(APPEND DOWNLOADED_VOICES "${dest_file}.json")
+endforeach()
+
+add_custom_target(copy_voices_assets ALL DEPENDS ${DOWNLOADED_VOICES})
