@@ -33,5 +33,8 @@ jobs:
         run: cmake --build --preset=${{ matrix.preset }} -- -j$(nproc)
 
       - name: Show files
-        run: tree -a build/bin/bin || true
+        working-directory: build/bin/bin
+        run: |
+          ls
+          tree -a voices || true
 
