@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       # windows-latest already has Ninja, clang-cl, and msvc environment
-
+     
       - name: Configure CMake
         run: cmake --preset=${{ matrix.preset }}
 

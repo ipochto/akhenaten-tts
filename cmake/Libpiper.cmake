@@ -1,5 +1,15 @@
 include(ExternalProject)
 
+if(WIN32)
+    set(PIPER_LIB_NAME piper.dll)
+    set(PIPER_IMPLIB_NAME piper.lib)
+    set(ONNX_LIB_NAME onnxruntime.dll)
+    set(ONNX_IMPLIB_NAME onnxruntime.lib)
+else()
+    set(PIPER_LIB_NAME libpiper.so)
+    set(ONNX_LIB_NAME libonnxruntime.so)
+endif()
+
 set(PIPER_PREFIX ${CMAKE_BINARY_DIR}/_deps/piper_ext)
 set(PIPER_INSTALL_DIR ${PIPER_PREFIX}/install)
 set(PIPER_SOURCE_DIR ${PIPER_PREFIX}/src/piper_ext)
@@ -32,8 +42,10 @@ ExternalProject_Add(piper_ext
         ${CMAKE_COMMAND} --build ${PIPER_BUILD_DIR} --target install
 
     BUILD_BYPRODUCTS
-        ${PIPER_INSTALL_DIR}/libpiper.so
-        ${PIPER_INSTALL_DIR}/lib/libonnxruntime.so
+        ${PIPER_INSTALL_DIR}/${PIPER_LIB_NAME}
+        ${PIPER_INSTALL_DIR}/${PIPER_IMPLIB_NAME}
+        ${PIPER_INSTALL_DIR}/lib/${ONNX_LIB_NAME}
+        ${PIPER_INSTALL_DIR}/lib/${ONNX_IMPLIB_NAME}
 )
 
 file(MAKE_DIRECTORY ${PIPER_INSTALL_DIR}/include)
@@ -41,18 +53,35 @@ file(MAKE_DIRECTORY ${PIPER_INSTALL_DIR}/include)
 # libpiper
 add_library(libpiper SHARED IMPORTED)
 
-set_target_properties(libpiper PROPERTIES
-    IMPORTED_LOCATION ${PIPER_INSTALL_DIR}/libpiper.so
-    INTERFACE_INCLUDE_DIRECTORIES ${PIPER_INSTALL_DIR}/include
-)
+if(WIN32)
+    set_target_properties(libpiper PROPERTIES
+        IMPORTED_LOCATION   ${PIPER_INSTALL_DIR}/${PIPER_LIB_NAME}
+        # Import library (.lib)
+        IMPORTED_IMPLIB     ${PIPER_INSTALL_DIR}/${PIPER_IMPLIB_NAME}
+        INTERFACE_INCLUDE_DIRECTORIES ${PIPER_INSTALL_DIR}/include
+    )
+else()
+    set_target_properties(libpiper PROPERTIES
+        IMPORTED_LOCATION ${PIPER_INSTALL_DIR}/${PIPER_LIB_NAME}
+        INTERFACE_INCLUDE_DIRECTORIES ${PIPER_INSTALL_DIR}/include
+    )
+endif()
 
 # ONNX Runtime library shipped by Piper (already downloaded by ExternalProject)
-set(ONNXRT_LIB ${PIPER_INSTALL_DIR}/lib/libonnxruntime.so)
+if(WIN32)
+    add_library(libpiper_onnx SHARED IMPORTED)
+    set_target_properties(libpiper_onnx PROPERTIES
+        IMPORTED_LOCATION ${PIPER_INSTALL_DIR}/lib/${ONNX_LIB_NAME}
+        IMPORTED_IMPLIB ${PIPER_INSTALL_DIR}/lib/${ONNX_IMPLIB_NAME}
+    )
+else()
+    add_library(libpiper_onnx SHARED IMPORTED)
+    set_target_properties(libpiper_onnx PROPERTIES
+        IMPORTED_LOCATION ${PIPER_INSTALL_DIR}/lib/${ONNX_LIB_NAME}
+    )
+endif()
 
-add_library(libpiper_onnx SHARED IMPORTED)
-set_target_properties(libpiper_onnx PROPERTIES
-    IMPORTED_LOCATION ${ONNXRT_LIB}
-)
+
 
 add_dependencies(libpiper piper_ext)
 add_dependencies(libpiper_onnx piper_ext)
