@@ -2,7 +2,8 @@
 #include "script_parser.hpp"
 
 
-std::vector<Phrase> parsePhrases(const fs::path &srcScript)
+ auto parsePhrases(const fs::path &srcScript)
+    -> std::pair<std::string, std::vector<Phrase>>
 {
 	auto result = std::vector<Phrase>();
 
@@ -16,11 +17,14 @@ std::vector<Phrase> parsePhrases(const fs::path &srcScript)
 	sol::table phrases = lua["source"]["phrases"];
 
 	for (auto &[index, elem] : phrases) {
-		sol::table phrase = elem.as<sol::table>();
-		std::string text = phrase["text"];
-		std::string key = phrase["key"];
+		const sol::table phrase = elem.as<sol::table>();
 
-		result.push_back({text, key});
+        const int voiceId = phrase["unit_id"].get_or(0);
+        const std::string text = phrase["text"];
+		const std::string key = phrase["key"];
+
+		result.push_back({voiceId, text, key});
 	}
-    return result;
+    std::string lang = lua["source"]["lang"];
+    return {lang, result};
 }

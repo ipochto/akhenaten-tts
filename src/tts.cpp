@@ -35,37 +35,46 @@ static inline int16_t floatToInt16(float x) {
 	return static_cast<int16_t>(x * 32767.0f);
 }
 
-void TTS::synthesizeWAV(const std::string &text, fs::path &filename)
+void TTS::synthesizeWAV(const std::string &text,
+						const fs::path &filename,
+						const std::string &reqLang,
+						int speakerId /* = 0 */)
 {
+	if (reqLang != language) {
+		fmt::println("Mismatch languages: requested {} but configured {}", reqLang.c_str(), language.c_str());
+		return;
+	}
 	std::ofstream audio_stream(filename, std::ios::binary);
 	if (!audio_stream) {
 		fmt::println("Failed to create output audio file: {}", filename.c_str());
 		return;
 	}
-    audio_stream.seekp(sizeof(WAVHeader_PCM), std::ios::beg); // Reserve space for header first
-	
+	audio_stream.seekp(sizeof(WAVHeader_PCM), std::ios::beg); // Reserve space for header first
+
+	changeSpeaker(speakerId);
 	piper_synthesize_start(synth, text.c_str(), &options);
 
 	piper_audio_chunk chunk;
 
 	uint32_t sampleRate = 0;
-    uint32_t samplesCount = 0;
+	uint32_t samplesCount = 0;
 
 	while (piper_synthesize_next(synth, &chunk) != PIPER_DONE) {
-        if (sampleRate == 0) {
-            sampleRate = chunk.sample_rate;
+		if (sampleRate == 0) {
+			sampleRate = chunk.sample_rate;
 		}
-        for (size_t i = 0; i < chunk.num_samples; i++) {
-            const int16_t sample = floatToInt16(chunk.samples[i]);
-            audio_stream.write(reinterpret_cast<const char*>(&sample), sizeof(int16_t));
-        }
+		for (size_t i = 0; i < chunk.num_samples; i++) {
+			const int16_t sample = floatToInt16(chunk.samples[i]);
+			audio_stream.write(reinterpret_cast<const char*>(&sample), sizeof(int16_t));
+		}
 		samplesCount += chunk.num_samples;
 	}
 	WAVHeader_PCM header(sampleRate, samplesCount);
 
-    // Write header at beginning
-    audio_stream.seekp(0, std::ios::beg);
-    audio_stream.write(reinterpret_cast<char*>(&header), sizeof(header));
+	// Write header at beginning
+	audio_stream.seekp(0, std::ios::beg);
+	audio_stream.write(reinterpret_cast<char*>(&header), sizeof(header));
+	audio_stream.close();
 
-    audio_stream.close();
+	changeSpeaker(TTS::cDefaultSpeaker);
 }

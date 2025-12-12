@@ -20,6 +20,8 @@ struct TTSConfig
 class TTS
 {
 public:
+	static const int cDefaultSpeaker = 0;
+
 	TTS(const TTSConfig &config)
 	{
 		synth = piper_create(config.voiceModel.c_str(), 
@@ -40,10 +42,17 @@ public:
 		piper_free(synth);
 	}
 
-	void synthesizeWAV(const std::string &text, fs::path &filename);
+	void synthesizeWAV(const std::string &text,
+					   const fs::path &filename,
+					   const std::string &reqLang,
+					   int speakerId = cDefaultSpeaker);
+	
 
 private:
-	
+	void changeSpeaker(int speakerId)
+	{ 
+		options.speaker_id = speakerId < speakersNum ? speakerId : speakerId % speakersNum;
+	}
 
 private:
 	piper_synthesizer *synth;

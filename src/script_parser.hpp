@@ -6,6 +6,8 @@
 
 namespace fs = std::filesystem;
 
-using Phrase = std::pair<std::string, std::string>;
+using Phrase = std::tuple<int, std::string, std::string>;
 
-std::vector<Phrase> parsePhrases(const fs::path &srcScript);
+auto parsePhrases(const fs::path &srcScript)
+	-> std::pair<std::string, std::vector<Phrase>>;
+

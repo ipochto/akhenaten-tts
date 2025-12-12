@@ -9,16 +9,18 @@ int main(int argc, char* argv[])
 	if (!parseCmdLineArguments(argc, argv, config)) {
 		return 1;
 	}
-	if (!fs::exists(config.outputDir)) {
-		fs::create_directories(config.outputDir);
+	const fs::path dstPath = config.outputDir / config.lang;
+	if (!fs::exists(dstPath)) {
+		fs::create_directories(dstPath);
 	}
 	TTS synth(config);
 
-	for (const auto &[text, key] : parsePhrases(config.inputFile)) {
-		fs::path dstFile = config.outputDir / key;
+	const auto [lang, phrases] = parsePhrases(config.inputFile);
+	for (const auto &[voiceId, text, key] : phrases) {
+		fs::path dstFile = dstPath / key;
 		dstFile += ".wav";
-		synth.synthesizeWAV(text, dstFile);
+		fmt::println("log: Synthesizing {}", dstFile.c_str());
+		synth.synthesizeWAV(text, dstFile, lang, voiceId);
 	}
-
 	return 0;
 }
