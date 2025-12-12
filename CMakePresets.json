@@ -1,0 +1,342 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 30,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/bin",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioCode": {
+                    "copyCompileCommands": "${sourceDir}/compile_commands.json"
+                }
+            }
+        },
+        {
+            "name": "generator-ninja",
+            "hidden": true,
+            "generator": "Ninja"
+        },
+        {
+            "name": "platform-linux",
+            "hidden": true,
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "platform-windows",
+            "hidden": true,
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "compiler-gcc",
+            "hidden": true,
+            "environment": {
+                "CC": "gcc",
+                "CXX": "g++"
+            }
+        },
+        {
+            "name": "compiler-clang",
+            "hidden": true,
+            "environment": {
+                "CC": "clang",
+                "CXX": "clang++"
+            }
+        },
+        {
+            "name": "compiler-clang-cl",
+            "hidden": true,
+            "environment": {
+                "CC": "clang-cl",
+                "CXX": "clang-cl"
+            }
+        },
+        {
+            "name": "compiler-msvc",
+            "hidden": true
+        },
+        {
+            "name": "debug",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "profile",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "ENABLE_PROFILING": "ON"
+            }
+        },
+        {
+            "name": "linux-gcc-debug",
+            "displayName": "Debug Linux GCC",
+            "description": "Build with debug information and no optimizations",
+            "inherits": [
+                "base",
+                "platform-linux",
+                "generator-ninja",
+                "compiler-gcc",
+                "debug"
+            ]
+        },
+        {
+            "name": "linux-gcc-release",
+            "displayName": "Release Linux GCC",
+            "description": "Optimized build with no debug info",
+            "inherits": [
+                "base",
+                "platform-linux",
+                "generator-ninja",
+                "compiler-gcc",
+                "release"
+            ]
+        },
+        {
+            "name": "linux-gcc-profile",
+            "displayName": "Profiling Linux GCC",
+            "description": "RelWithDebInfo build with profiling options",
+            "inherits": [
+                "base",
+                "platform-linux",
+                "generator-ninja",
+                "compiler-gcc",
+                "profile"
+            ]
+        },
+        {
+            "name": "linux-gcc-coverage",
+            "displayName": "Coverage Linux GCC",
+            "description": "Build with coverage information",
+            "inherits": [
+                "base",
+                "platform-linux",
+                "generator-ninja",
+                "compiler-gcc",
+                "debug"
+            ],
+            "cacheVariables": {
+                "ENABLE_COVERAGE": "ON"
+            }
+        },        
+        {
+            "name": "linux-clang-debug",
+            "displayName": "Debug Linux Clang",
+            "description": "Build with debug information and no optimizations",
+            "inherits": [
+                "base",
+                "platform-linux",
+                "generator-ninja",
+                "compiler-clang",
+                "debug"
+            ]
+        },
+        {
+            "name": "linux-clang-release",
+            "displayName": "Release Linux Clang",
+            "description": "Optimized build with no debug info",
+            "inherits": [
+                "base",
+                "platform-linux",
+                "generator-ninja",
+                "compiler-clang",
+                "release"
+            ]
+        },
+        {
+            "name": "linux-clang-profile",
+            "displayName": "Profiling Linux Clang",
+            "description": "RelWithDebInfo build with profiling options",
+            "inherits": [
+                "base",
+                "platform-linux",
+                "generator-ninja",
+                "compiler-clang",
+                "profile"
+            ]
+        },
+        {
+            "name": "linux-clang-coverage",
+            "displayName": "Coverage Linux Clang",
+            "description": "Build with coverage information",
+            "inherits": [
+                "base",
+                "platform-linux",
+                "generator-ninja",
+                "compiler-clang",
+                "debug"
+            ],
+            "cacheVariables": {
+                "ENABLE_COVERAGE": "ON"
+            }
+        },
+        {
+            "name": "windows-clang-cl-debug",
+            "displayName": "Debug Windows Clang-cl",
+            "description": "Build with debug information and no optimizations",
+            "inherits": [
+                "base",
+                "platform-windows",
+                "generator-ninja",
+                "compiler-clang-cl",
+                "debug"
+            ]
+        },
+        {
+            "name": "windows-clang-cl-release",
+            "displayName": "Release Windows Clang-cl",
+            "description": "Optimized build with no debug info",
+            "inherits": [
+                "base",
+                "platform-windows",
+                "generator-ninja",
+                "compiler-clang-cl",
+                "release"
+            ]
+        },
+        {
+            "name": "windows-clang-cl-profile",
+            "displayName": "Profiling Windows Clang-cl",
+            "description": "RelWithDebInfo build with profiling options",
+            "inherits": [
+                "base",
+                "platform-windows",
+                "generator-ninja",
+                "compiler-clang-cl",
+                "profile"
+            ]
+        },
+        {
+            "name": "windows-msvc-debug",
+            "displayName": "Debug Windows MSVC",
+            "description": "Build with debug information and no optimizations",
+            "inherits": [
+                "base",
+                "platform-windows",
+                "generator-ninja",
+                "compiler-msvc",
+                "debug"
+            ]
+        },
+        {
+            "name": "windows-msvc-release",
+            "displayName": "Release Windows MSVC",
+            "description": "Optimized build with no debug info",
+            "inherits": [
+                "base",
+                "platform-windows",
+                "generator-ninja",
+                "compiler-msvc",
+                "release"
+            ]
+        },
+        {
+            "name": "windows-msvc-profile",
+            "displayName": "Profiling Windows MSVC",
+            "description": "RelWithDebInfo build with profiling options",
+            "inherits": [
+                "base",
+                "platform-windows",
+                "generator-ninja",
+                "compiler-msvc",
+                "profile"
+            ]
+        }        
+    ],
+    "buildPresets": [
+        {
+            "name": "linux-gcc-debug",
+            "configurePreset": "linux-gcc-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-gcc-release",
+            "configurePreset": "linux-gcc-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "linux-gcc-profile",
+            "configurePreset": "linux-gcc-profile",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "linux-gcc-coverage",
+            "configurePreset": "linux-gcc-coverage",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-clang-debug",
+            "configurePreset": "linux-clang-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-clang-release",
+            "configurePreset": "linux-clang-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "linux-clang-profile",
+            "configurePreset": "linux-clang-profile",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "linux-clang-coverage",
+            "configurePreset": "linux-clang-coverage",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-clang-cl-debug",
+            "configurePreset": "windows-clang-cl-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-clang-cl-release",
+            "configurePreset": "windows-clang-cl-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "windows-clang-cl-profile",
+            "configurePreset": "windows-clang-cl-profile",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "windows-msvc-debug",
+            "configurePreset": "windows-msvc-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-msvc-release",
+            "configurePreset": "windows-msvc-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "windows-msvc-profile",
+            "configurePreset": "windows-msvc-profile",
+            "configuration": "RelWithDebInfo"
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+name: CMake CI (Windows)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        preset: [
+             windows-msvc-release
+        ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # windows-latest already has Ninja, clang-cl, and msvc environment
+
+      - name: Configure CMake
+        run: cmake --preset=${{ matrix.preset }}
+
+      - name: Build
+        run: cmake --build --preset=${{ matrix.preset }}
+
