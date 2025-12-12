@@ -10,10 +10,11 @@ struct TTSConfig
 {
 	fs::path inputFile;
 	fs::path outputDir;
+	std::string lang;
 	fs::path voiceModel;
 	fs::path voiceModelCfg;
-	fs::path espeakData {"espeak-ng-data"};
-	std::string lang;
+	fs::path espeakData;
+	int speakersNum {1};
 };
 
 class TTS
@@ -29,7 +30,11 @@ public:
 			exit (1);
 		}
 		options = piper_default_synthesize_options(synth);
+		speakersNum = config.speakersNum;
+
+		language = config.lang;
 	}
+
 	~TTS()
 	{
 		piper_free(synth);
@@ -42,7 +47,10 @@ private:
 
 private:
 	piper_synthesizer *synth;
-	piper_synthesize_options options;
+	piper_synthesize_options options {};
+
+	std::string language;
+	int speakersNum = 1;
 };
 
 

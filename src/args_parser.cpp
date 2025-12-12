@@ -1,3 +1,4 @@
+#include "script.hpp"
 #include "tts.hpp"
 
 #include <cxxopts.hpp>
@@ -8,6 +9,49 @@
 
 namespace fs = std::filesystem;
 
+namespace {
+	bool parseConfigScript(const fs::path &configFile, TTSConfig &config)
+	{
+		if (!fs::exists(configFile)) {
+			fmt::println("The specified configuration file does not exist: \"{}\"", configFile.c_str());
+			return false;
+		}
+		sol::state lua;
+
+		lua["config"] = lua.script_file(configFile);
+		if (!lua["config"].valid()) {
+			return false;
+		}
+		config.lang = lua["config"]["lang"];
+
+		const std::string espeakData = lua["config"]["espeakData"];
+		config.espeakData = fs::absolute(espeakData).lexically_normal();
+
+		if (!fs::exists(config.espeakData)) {
+			fmt::println("The specified espeak-ng data folder does not exist: \"{}\"", config.espeakData.c_str());
+			return false;
+		}
+
+		const std::string defaultVoice = lua["config"]["voices"]["default"];
+		sol::table voice = lua["config"]["voices"][defaultVoice];
+
+		config.voiceModel = fs::absolute(voice["voiceModel"].get<std::string>()).lexically_normal();
+		if (!fs::exists(config.voiceModel)) {
+			fmt::println("The specified voice model file does not exist: \"{}\"", config.voiceModel.c_str());
+			return false;
+		}
+		config.voiceModelCfg = config.voiceModel;
+		config.voiceModelCfg += ".json";
+		if (!fs::exists(config.voiceModelCfg)) {
+			fmt::println("The specified voice model configuration file does not exist: \"{}\"", config.voiceModelCfg.c_str());
+			return false;
+		}
+		config.speakersNum = voice["speakers"];
+		
+		return true;
+	}
+} // namespace
+
 bool parseCmdLineArguments(int argc, char* argv[], TTSConfig &config)
 {
 	bool resultOk = true;
@@ -17,10 +61,8 @@ bool parseCmdLineArguments(int argc, char* argv[], TTSConfig &config)
 	options.add_options()
 		("h,help", "Print usage")
 		("i,input", "Input file with phrases to convert", cxxopts::value<fs::path>())
-		("O,output-dir", "Output directory", cxxopts::value<fs::path>())
-		("l,lang", "Language suffix(en, ru, cn, etc...)", cxxopts::value<std::string>())
-		("v,voice", "Path to voice model file (.onnx)", cxxopts::value<fs::path>())
-		("e,espeak-data", "Path to espeak-ng data dir", cxxopts::value<fs::path>());
+		("c,config", "Synthesizer configuration file", cxxopts::value<fs::path>())
+		("O,output-dir", "Output directory", cxxopts::value<fs::path>());
 	
 	options.allow_unrecognised_options();
 	const auto parsed = options.parse(argc, argv);
@@ -40,7 +82,7 @@ bool parseCmdLineArguments(int argc, char* argv[], TTSConfig &config)
 		if (fs::exists(inputFile)) {
 			config.inputFile = inputFile;
 		} else {
-			fmt::println("The specified input file does not exist: \"{}\"", inputFile.string());
+			fmt::println("The specified input file does not exist: \"{}\"", inputFile.c_str());
 			return false;
 		}
 	} else {
@@ -55,44 +97,16 @@ bool parseCmdLineArguments(int argc, char* argv[], TTSConfig &config)
 		resultOk = false;
 	}
 
-	if (parsed.count("lang")) {
-		config.lang = parsed["lang"].as<std::string>();
-	} else {
-		fmt::println("Lang is required (--lang)");
-		resultOk = false;
-	}
-
-	if (parsed.count("voice")) {
-		const auto voiceFile = fs::absolute(parsed["voice"].as<fs::path>()).lexically_normal();
-		if (fs::exists(voiceFile)) {
-			config.voiceModel = voiceFile;
-		} else {
-			fmt::println("The specified voice model file does not exist: \"{}\"", voiceFile.string());
-			return false;
-		}
-		const auto voiceCfgFile = fs::path(voiceFile.string() + ".json");
-		if (fs::exists(voiceCfgFile)) {
-			config.voiceModelCfg = voiceCfgFile;
-		} else {
-			fmt::println("The specified voice model cfg file does not exist: \"{}\"", voiceCfgFile.string());
+	if (parsed.count("config")) {
+		const auto configFile = fs::absolute(parsed["config"].as<fs::path>()).lexically_normal();
+		if (!parseConfigScript(configFile, config)) {
+			fmt::println("Unable to parse configuration file: \"{}\"", configFile.c_str());
 			return false;
 		}
 	} else {
-		fmt::println("Voice model file is required (--voice)");
+		fmt::println("Synthesizer configuration file is required (--config)");
 		resultOk = false;
 	}
 
-	if (const auto espeakDataDir 
-			= fs::absolute(parsed.count("espeak-data") ? parsed["espeak-data"].as<fs::path>()
-													   : config.espeakData).lexically_normal();
-		fs::exists(espeakDataDir)) {
-
-		config.espeakData = espeakDataDir;
-
-	} else {
-		fmt::println("espeak-ng data directory is unavailable: \"{}\"",
-					 espeakDataDir.lexically_normal().string());
-		return false;
-	}
-	return true;
+	return resultOk;
 }
