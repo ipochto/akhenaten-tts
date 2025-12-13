@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         preset: [
-             windows-msvc-release
+          windows-clang-cl-release
         ]
     steps:
       - name: Checkout repository
