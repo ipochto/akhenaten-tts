@@ -16,11 +16,12 @@ include(CopyScripts)
 set(app_sources
     src/args_parser.cpp
     src/main.cpp
-    src/script_parser.cpp
+    src/phrases_parser.cpp
     src/tts.cpp
 )
 set(app_headers
-    src/script_parser.hpp
+    src/phrases_parser.hpp
+    src/script.hpp
     src/tts.hpp
 )
 
