@@ -23,3 +23,12 @@ jobs:
       - name: Build
         run: cmake --build --preset=${{ matrix.preset }}
 
+      - name: Show files
+        shell: pwsh
+        working-directory: build/bin
+        run: |
+          Get-ChildItem
+          if (Test-Path voices) {
+            tree /A voices
+          }
+
