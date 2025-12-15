@@ -45,30 +45,34 @@
         {
             "name": "compiler-gcc",
             "hidden": true,
-            "environment": {
-                "CC": "gcc",
-                "CXX": "g++"
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
             }
         },
         {
             "name": "compiler-clang",
             "hidden": true,
-            "environment": {
-                "CC": "clang",
-                "CXX": "clang++"
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
             }
         },
-        {
+       {
             "name": "compiler-clang-cl",
             "hidden": true,
-            "environment": {
-                "CC": "clang-cl",
-                "CXX": "clang-cl"
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang-cl",
+                "CMAKE_CXX_COMPILER": "clang-cl"
             }
         },
         {
             "name": "compiler-msvc",
-            "hidden": true
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl",
+                "CMAKE_CXX_COMPILER": "cl"
+            }           
         },
         {
             "name": "debug",
