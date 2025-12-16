@@ -1,0 +1,65 @@
+diff --git a/libpiper/CMakeLists.txt b/libpiper/CMakeLists.txt
+index 57349c1..b8fd714 100644
+--- a/libpiper/CMakeLists.txt
++++ b/libpiper/CMakeLists.txt
+@@ -20,10 +20,17 @@ else()
+     set(UCD_STATIC_LIB ${ESPEAKNG_BUILD_DIR}/src/espeak_ng_external-build/src/ucd-tools/libucd.a)
+ endif()
+
++find_package(Git REQUIRED)
++
+ ExternalProject_Add(espeak_ng_external
+     GIT_REPOSITORY https://github.com/espeak-ng/espeak-ng.git
+     GIT_TAG 212928b394a96e8fd2096616bfd54e17845c48f6  # 2025-Mar-22
+     PREFIX ${ESPEAKNG_BUILD_DIR}
++
++    PATCH_COMMAND
++    ${CMAKE_COMMAND} -E echo "Patching espeak-ng for fixing Windows build" &&
++        ${GIT_EXECUTABLE} apply ${CMAKE_CURRENT_LIST_DIR}/cmake/patches/espeak-ng-static-win.patch
++
+     CMAKE_ARGS
+         -DCMAKE_INSTALL_PREFIX=${ESPEAKNG_INSTALL_DIR}
+         -DBUILD_SHARED_LIBS:BOOL=OFF
+@@ -37,8 +44,8 @@ ExternalProject_Add(espeak_ng_external
+         -DEXTRA_cmn:BOOL=ON
+         -DEXTRA_ru:BOOL=ON
+         # Need to explicitly add ucd include directory for CI
+-        "-DCMAKE_C_FLAGS=-D_FILE_OFFSET_BITS=64 -I${ESPEAKNG_BUILD_DIR}/src/espeak_ng_external/src/ucd-tools/src/include"
+-        "-DCMAKE_CXX_FLAGS=-D_FILE_OFFSET_BITS=64 -I${ESPEAKNG_BUILD_DIR}/src/espeak_ng_external/src/ucd-tools/src/include"
++        "-DCMAKE_C_FLAGS=-D_FILE_OFFSET_BITS=64 -DESPEAK_NG_STATIC -I${ESPEAKNG_BUILD_DIR}/src/espeak_ng_external/src/ucd-tools/src/include"
++        "-DCMAKE_CXX_FLAGS=-D_FILE_OFFSET_BITS=64 -DESPEAK_NG_STATIC -I${ESPEAKNG_BUILD_DIR}/src/espeak_ng_external/src/ucd-tools/src/include"
+     BUILD_BYPRODUCTS
+         ${ESPEAKNG_STATIC_LIB}
+         ${UCD_STATIC_LIB}
+diff --git a/libpiper/cmake/patches/espeak-ng-static-win.patch b/libpiper/cmake/patches/espeak-ng-static-win.patch
+new file mode 100644
+index 0000000..cdf28f7
+--- /dev/null
++++ b/libpiper/cmake/patches/espeak-ng-static-win.patch
+@@ -0,0 +1,26 @@
++diff --git a/src/include/espeak-ng/speak_lib.h b/src/include/espeak-ng/speak_lib.h
++index 9ec4caf..5a68bc5 100644
++--- a/src/include/espeak-ng/speak_lib.h
+++++ b/src/include/espeak-ng/speak_lib.h
++@@ -29,13 +29,15 @@
++ #include <stddef.h>
++
++ #if defined(_WIN32) || defined(_WIN64)
++-#ifdef LIBESPEAK_NG_EXPORT
++-#define ESPEAK_API __declspec(dllexport)
+++# if defined(ESPEAK_NG_STATIC)
+++#  define ESPEAK_API
+++# elif LIBESPEAK_NG_EXPORT
+++#  define ESPEAK_API __declspec(dllexport)
+++# else
+++#  define ESPEAK_API __declspec(dllimport)
+++# endif
++ #else
++-#define ESPEAK_API __declspec(dllimport)
++-#endif
++-#else
++-#define ESPEAK_API
+++# define ESPEAK_API
++ #endif
++
++ #define ESPEAK_API_REVISION  12

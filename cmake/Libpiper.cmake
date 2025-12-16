@@ -23,7 +23,10 @@ ExternalProject_Add(piper_ext
     GIT_TAG main
 
     UPDATE_COMMAND ""
-    PATCH_COMMAND  ""
+    PATCH_COMMAND
+        ${CMAKE_COMMAND} -E echo "Patching piper for fixing Windows build" &&
+        ${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/cmake/third-party/patches/piper-add-espeak-patch.patch &&
+        ${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/cmake/third-party/patches/piper-wchar-fix.patch
 
     SOURCE_DIR ${PIPER_SOURCE_DIR}
     BINARY_DIR ${PIPER_BUILD_DIR}
