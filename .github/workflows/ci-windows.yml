@@ -9,7 +9,8 @@ jobs:
     strategy:
       matrix:
         preset: [
-          windows-clang-cl-release
+          windows-clang-cl-release,
+          windows-msvc-release
         ]
     steps:
       - name: Checkout repository
@@ -29,6 +30,5 @@ jobs:
         run: |
           Get-ChildItem
           if (Test-Path voices) {
-            tree /A voices
+            tree /A /F voices
           }
-

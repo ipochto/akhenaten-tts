@@ -41,12 +41,12 @@ void TTS::synthesizeWAV(const std::string &text,
 						int speakerId /* = 0 */)
 {
 	if (reqLang != language) {
-		fmt::println("Mismatch languages: requested {} but configured {}", reqLang.c_str(), language.c_str());
+		fmt::println("Mismatch languages: requested {} but configured {}", reqLang, language);
 		return;
 	}
 	std::ofstream audio_stream(filename, std::ios::binary);
 	if (!audio_stream) {
-		fmt::println("Failed to create output audio file: {}", filename.c_str());
+		fmt::println("Failed to create output audio file: {}", filename.string());
 		return;
 	}
 	audio_stream.seekp(sizeof(WAVHeader_PCM), std::ios::beg); // Reserve space for header first

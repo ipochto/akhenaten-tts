@@ -9,7 +9,7 @@ auto parsePhrases(const fs::path &srcScript)
 
 	sol::state lua;
 
-	lua["source"] = lua.script_file(srcScript);
+	lua["source"] = lua.script_file(srcScript.string());
 	if (!lua["source"].valid() || !lua["source"]["phrases"].valid()) {
 		fmt::println("Failed to open the input script or the script is invalid");
 		exit (1);       

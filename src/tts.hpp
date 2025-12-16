@@ -24,9 +24,9 @@ public:
 
 	TTS(const TTSConfig &config)
 	{
-		synth = piper_create(config.voiceModel.c_str(), 
-							 config.voiceModelCfg.c_str(), 
-							 config.espeakData.c_str());
+		synth = piper_create(config.voiceModel.string().c_str(), 
+							 config.voiceModelCfg.string().c_str(), 
+							 config.espeakData.string().c_str());
 		if (!synth) {
 			fmt::println("Failed to create Piper synthesizer");
 			exit (1);

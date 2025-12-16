@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	for (const auto &phrase : phrases) {
 		fs::path dstFile = dstPath / phrase.key;
 		dstFile += ".wav";
-		fmt::println("log: Synthesizing {}", dstFile.c_str());
+		fmt::println("log: Synthesizing {}", dstFile.string());
 		synth.synthesizeWAV(phrase.text, dstFile, lang, phrase.voiceId);
 	}
 	return 0;

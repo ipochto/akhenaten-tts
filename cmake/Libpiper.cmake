@@ -10,45 +10,43 @@ else()
     set(ONNX_LIB_NAME libonnxruntime.so)
 endif()
 
-set(PIPER_PREFIX ${CMAKE_BINARY_DIR}/_deps/piper_ext)
+set(PIPER_PREFIX ${CMAKE_BINARY_DIR}/_deps/libpiper_ext)
+
 set(PIPER_INSTALL_DIR ${PIPER_PREFIX}/install)
-set(PIPER_SOURCE_DIR ${PIPER_PREFIX}/src/piper_ext)
-set(PIPER_LIB_SOURCE_DIR ${PIPER_SOURCE_DIR}/libpiper)
 
-set(PIPER_BUILD_DIR ${PIPER_PREFIX}/build)
+if(WIN32)
+    find_package(Git REQUIRED)
+    set(PIPER_PATCH_MSG "Patching espeak-ng for fixing Windows build")
+    set(PIPER_PATCH_CMD
+        ${GIT_EXECUTABLE} apply --ignore-space-change
+                                --ignore-whitespace
+                                --whitespace=nowarn
+                                ${CMAKE_SOURCE_DIR}/cmake/third-party/patches/piper_n_espeak-patches-win.patch)
+endif()
 
-ExternalProject_Add(piper_ext
-    PREFIX ${PIPER_PREFIX}
+ExternalProject_Add(libpiper_ext
     GIT_REPOSITORY https://github.com/OHF-Voice/piper1-gpl.git
-    GIT_TAG main
+    GIT_TAG        main
+    PREFIX ${PIPER_PREFIX}
 
-    UPDATE_COMMAND ""
+    SOURCE_SUBDIR libpiper
+
     PATCH_COMMAND
-        ${CMAKE_COMMAND} -E echo "Patching piper for fixing Windows build" &&
-        ${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/cmake/third-party/patches/piper-add-espeak-patch.patch &&
-        ${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/cmake/third-party/patches/piper-wchar-fix.patch
+        ${CMAKE_COMMAND} -E echo ${PIPER_PATCH_MSG}
+        COMMAND ${PIPER_PATCH_CMD}
 
-    SOURCE_DIR ${PIPER_SOURCE_DIR}
-    BINARY_DIR ${PIPER_BUILD_DIR}
-    
-    CONFIGURE_COMMAND
-        ${CMAKE_COMMAND}
-            -S ${PIPER_LIB_SOURCE_DIR}
-            -B ${PIPER_BUILD_DIR}
-            -DCMAKE_INSTALL_PREFIX=${PIPER_INSTALL_DIR}
-            -DCMAKE_BUILD_TYPE=Release
+    CMAKE_GENERATOR ${CMAKE_GENERATOR}
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+        -DCMAKE_INSTALL_PREFIX=${PIPER_INSTALL_DIR}
 
-    BUILD_COMMAND
-        ${CMAKE_COMMAND} --build ${PIPER_BUILD_DIR} --parallel
-
-    INSTALL_COMMAND
-        ${CMAKE_COMMAND} --build ${PIPER_BUILD_DIR} --target install
-
-    BUILD_BYPRODUCTS
+     BUILD_BYPRODUCTS
         ${PIPER_INSTALL_DIR}/${PIPER_LIB_NAME}
         ${PIPER_INSTALL_DIR}/${PIPER_IMPLIB_NAME}
         ${PIPER_INSTALL_DIR}/lib/${ONNX_LIB_NAME}
-        ${PIPER_INSTALL_DIR}/lib/${ONNX_IMPLIB_NAME}
+        ${PIPER_INSTALL_DIR}/lib/${ONNX_IMPLIB_NAME}   
 )
 
 file(MAKE_DIRECTORY ${PIPER_INSTALL_DIR}/include)
@@ -71,23 +69,21 @@ else()
 endif()
 
 # ONNX Runtime library shipped by Piper (already downloaded by ExternalProject)
+add_library(libpiper_onnx SHARED IMPORTED)
+
 if(WIN32)
-    add_library(libpiper_onnx SHARED IMPORTED)
     set_target_properties(libpiper_onnx PROPERTIES
         IMPORTED_LOCATION ${PIPER_INSTALL_DIR}/lib/${ONNX_LIB_NAME}
         IMPORTED_IMPLIB ${PIPER_INSTALL_DIR}/lib/${ONNX_IMPLIB_NAME}
     )
 else()
-    add_library(libpiper_onnx SHARED IMPORTED)
     set_target_properties(libpiper_onnx PROPERTIES
         IMPORTED_LOCATION ${PIPER_INSTALL_DIR}/lib/${ONNX_LIB_NAME}
     )
 endif()
 
-
-
-add_dependencies(libpiper piper_ext)
-add_dependencies(libpiper_onnx piper_ext)
+add_dependencies(libpiper libpiper_ext)
+add_dependencies(libpiper_onnx libpiper_ext)
 
 set(PIPER_ASSETS_SRCDIR ${PIPER_INSTALL_DIR}/espeak-ng-data)
 set(PIPER_ASSETS_DSTDIR ${CMAKE_BINARY_DIR}/bin/espeak-ng-data)
@@ -97,7 +93,7 @@ add_custom_command(
     OUTPUT ${PIPER_ASSETS_DSTDIR}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${PIPER_ASSETS_DSTDIR}
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PIPER_ASSETS_SRCDIR} ${PIPER_ASSETS_DSTDIR}
-    DEPENDS piper_ext
+    DEPENDS libpiper_ext
     COMMENT "Copying Piper assets to bin/"
 )
 

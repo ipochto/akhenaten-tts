@@ -13,12 +13,12 @@ namespace {
 	bool parseConfigScript(const fs::path &configFile, TTSConfig &config)
 	{
 		if (!fs::exists(configFile)) {
-			fmt::println("The specified configuration file does not exist: \"{}\"", configFile.c_str());
+			fmt::println("The specified configuration file does not exist: \"{}\"", configFile.string());
 			return false;
 		}
 		sol::state lua;
 
-		lua["config"] = lua.script_file(configFile);
+		lua["config"] = lua.script_file(configFile.string());
 		if (!lua["config"].valid()) {
 			return false;
 		}
@@ -28,7 +28,7 @@ namespace {
 		config.espeakData = fs::absolute(espeakData).lexically_normal();
 
 		if (!fs::exists(config.espeakData)) {
-			fmt::println("The specified espeak-ng data folder does not exist: \"{}\"", config.espeakData.c_str());
+			fmt::println("The specified espeak-ng data folder does not exist: \"{}\"", config.espeakData.string());
 			return false;
 		}
 
@@ -37,13 +37,13 @@ namespace {
 
 		config.voiceModel = fs::absolute(voice["voiceModel"].get<std::string>()).lexically_normal();
 		if (!fs::exists(config.voiceModel)) {
-			fmt::println("The specified voice model file does not exist: \"{}\"", config.voiceModel.c_str());
+			fmt::println("The specified voice model file does not exist: \"{}\"", config.voiceModel.string());
 			return false;
 		}
 		config.voiceModelCfg = config.voiceModel;
 		config.voiceModelCfg += ".json";
 		if (!fs::exists(config.voiceModelCfg)) {
-			fmt::println("The specified voice model configuration file does not exist: \"{}\"", config.voiceModelCfg.c_str());
+			fmt::println("The specified voice model configuration file does not exist: \"{}\"", config.voiceModelCfg.string());
 			return false;
 		}
 		config.speakersNum = voice["speakers"];
@@ -82,7 +82,7 @@ bool parseCmdLineArguments(int argc, char* argv[], TTSConfig &config)
 		if (fs::exists(inputFile)) {
 			config.inputFile = inputFile;
 		} else {
-			fmt::println("The specified input file does not exist: \"{}\"", inputFile.c_str());
+			fmt::println("The specified input file does not exist: \"{}\"", inputFile.string());
 			return false;
 		}
 	} else {
@@ -100,7 +100,7 @@ bool parseCmdLineArguments(int argc, char* argv[], TTSConfig &config)
 	if (parsed.count("config")) {
 		const auto configFile = fs::absolute(parsed["config"].as<fs::path>()).lexically_normal();
 		if (!parseConfigScript(configFile, config)) {
-			fmt::println("Unable to parse configuration file: \"{}\"", configFile.c_str());
+			fmt::println("Unable to parse configuration file: \"{}\"", configFile.string());
 			return false;
 		}
 	} else {
