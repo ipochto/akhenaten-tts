@@ -14,7 +14,7 @@ set(PIPER_PREFIX ${CMAKE_BINARY_DIR}/_deps/libpiper_ext)
 
 set(PIPER_INSTALL_DIR ${PIPER_PREFIX}/install)
 
-if(WIN32)
+#if(WIN32)
     find_package(Git REQUIRED)
     set(PIPER_PATCH_MSG "Patching espeak-ng for fixing Windows build")
     set(PIPER_PATCH_CMD
@@ -22,7 +22,7 @@ if(WIN32)
                                 --ignore-whitespace
                                 --whitespace=nowarn
                                 ${CMAKE_SOURCE_DIR}/cmake/third-party/patches/piper_n_espeak-patches-win.patch)
-endif()
+#endif()
 
 ExternalProject_Add(libpiper_ext
     GIT_REPOSITORY https://github.com/OHF-Voice/piper1-gpl.git
