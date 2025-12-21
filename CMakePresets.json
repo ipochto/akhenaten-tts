@@ -24,6 +24,21 @@
             "hidden": true,
             "generator": "Ninja"
         },
+                {
+            "name": "generator-vc2019",
+            "hidden": true,
+            "generator": "Visual Studio 16 2019"
+        },
+        {
+            "name": "generator-vc2022",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022"
+        },
+        {
+            "name": "generator-vc2026",
+            "hidden": true,
+            "generator": "Visual Studio 18 2026"
+        },        
         {
             "name": "platform-linux",
             "hidden": true,
@@ -241,8 +256,7 @@
             "inherits": [
                 "base",
                 "platform-windows",
-                "generator-ninja",
-                "compiler-msvc",
+                "generator-vc2022",
                 "debug"
             ]
         },
@@ -253,8 +267,7 @@
             "inherits": [
                 "base",
                 "platform-windows",
-                "generator-ninja",
-                "compiler-msvc",
+                "generator-vc2022",
                 "release"
             ]
         },
@@ -265,8 +278,7 @@
             "inherits": [
                 "base",
                 "platform-windows",
-                "generator-ninja",
-                "compiler-msvc",
+                "generator-vc2022",
                 "profile"
             ]
         }        
