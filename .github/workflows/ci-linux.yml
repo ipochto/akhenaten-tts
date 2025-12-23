@@ -30,7 +30,7 @@ jobs:
         run: cmake --preset=${{ matrix.preset }}
 
       - name: Build
-        run: cmake --build --preset=${{ matrix.preset }} -- -j$(nproc)
+        run: cmake --build --preset=${{ matrix.preset }} -- -j$(nproc) --verbose
 
       - name: Show files
         working-directory: build/bin
