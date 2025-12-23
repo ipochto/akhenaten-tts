@@ -14,29 +14,36 @@ set(PIPER_PREFIX ${CMAKE_BINARY_DIR}/_deps/libpiper_ext)
 
 set(PIPER_INSTALL_DIR ${PIPER_PREFIX}/install)
 
-#if(WIN32)
-    find_package(Git REQUIRED)
-    set(PIPER_PATCH_MSG "Patching espeak-ng for fixing Windows build")
-    set(PIPER_PATCH_CMD
-        ${GIT_EXECUTABLE} apply --ignore-space-change
-                                --ignore-whitespace
-                                --whitespace=nowarn
-                                ${CMAKE_SOURCE_DIR}/cmake/third-party/patches/piper_n_espeak-patches-win.patch)
-#endif()
+set(PIPER_PATCHES
+    "${CMAKE_SOURCE_DIR}/cmake/third-party/patches/001-piper-cmake.patch"
+)
+
+if(WIN32)
+    list(APPEND PIPER_PATCHES
+        "${CMAKE_SOURCE_DIR}/cmake/third-party/patches/002-piper-dll-export-symbols-win.patch"
+        "${CMAKE_SOURCE_DIR}/cmake/third-party/patches/003-piper-wchar-fix-win.patch"
+        "${CMAKE_SOURCE_DIR}/cmake/third-party/patches/004-piper-add-espeak-ng-patch-win.patch"    
+    )
+endif()
+
+list(JOIN PIPER_PATCHES "|" PIPER_PATCHES_SERIALIZED) # serialize list
 
 ExternalProject_Add(libpiper_ext
     GIT_REPOSITORY https://github.com/OHF-Voice/piper1-gpl.git
-    GIT_TAG        main
+    GIT_TAG        32b95f8c1f0dc0ce27a6acd1143de331f61af777
     PREFIX ${PIPER_PREFIX}
 
     SOURCE_SUBDIR libpiper
 
     PATCH_COMMAND
-        ${CMAKE_COMMAND} -E echo ${PIPER_PATCH_MSG}
-        COMMAND ${PIPER_PATCH_CMD}
+        ${CMAKE_COMMAND}
+            -D MESSAGE="Patching libpiper and its deps."
+            -D PATCHES=${PIPER_PATCHES_SERIALIZED}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/apply_patches.cmake
 
     CMAKE_GENERATOR ${CMAKE_GENERATOR}
     CMAKE_ARGS
+        -DLIBPIPER_EXPORT_SYMBOLS=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
