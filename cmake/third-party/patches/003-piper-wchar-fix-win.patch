@@ -1,0 +1,20 @@
+diff --git a/libpiper/src/piper.cpp b/libpiper/src/piper.cpp
+index 774e87d..bf9be4d 100644
+--- a/libpiper/src/piper.cpp
++++ b/libpiper/src/piper.cpp
+@@ -96,8 +96,14 @@ struct piper_synthesizer *piper_create(const char *model_path,
+     synth->session_options.DisableMemPattern();
+     synth->session_options.DisableProfiling();
+ 
++#if defined(_WIN32)
++    auto model_path_strv = std::string_view(model_path);
++    const auto model_path_ort = std::wstring(model_path_strv.begin(), model_path_strv.end()).c_str();
++#else
++    const auto model_path_ort = model_path;
++#endif
+     synth->session = std::make_unique<Ort::Session>(
+-        Ort::Session(ort_env, model_path, synth->session_options));
++        Ort::Session(ort_env, model_path_ort, synth->session_options));
+ 
+     return synth;
+ }
