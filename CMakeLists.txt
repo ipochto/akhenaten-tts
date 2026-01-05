@@ -37,6 +37,7 @@ set(app_libraries
     libpiper_onnx
     lua::lua51
     sol2::sol2
+    libcurl
 )
 
 add_executable(${app})
