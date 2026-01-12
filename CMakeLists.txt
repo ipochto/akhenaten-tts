@@ -18,11 +18,13 @@ set(app_sources
     src/main.cpp
     src/phrases_parser.cpp
     src/tts.cpp
+    src/tts-config.cpp
 )
 set(app_headers
     src/phrases_parser.hpp
     src/script.hpp
     src/tts.hpp
+    src/tts-config.hpp
 )
 
 set(app_include_dirs
