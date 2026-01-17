@@ -4,8 +4,7 @@ set(SCRIPTS_DST_DIR "${CMAKE_BINARY_DIR}/bin")
 file(MAKE_DIRECTORY "${SCRIPTS_DST_DIR}")
 
 set(FILES
-    "enSynthCfg.lua"
-    "localization_en.lua"
+    "tts-config.lua"
 )
 set(DST_FILES "")
 
