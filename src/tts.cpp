@@ -174,6 +174,8 @@ bool TTS::downloadFile(const std::string &url, const fs::path &dstFilename)
 		fs::remove(dstFilename);
 	}
 	cpr::Session session;
+	session.SetUrl(cpr::Url{url});
+	session.SetRedirect(cpr::Redirect{true});
 	session.SetConnectTimeout(cpr::ConnectTimeout{10'000});
 	session.SetTimeout(cpr::Timeout{120'000});
 
