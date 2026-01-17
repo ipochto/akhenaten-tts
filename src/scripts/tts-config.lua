@@ -8,7 +8,7 @@ local config = {
 local voices = {
   en = {
     ["libritts"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/libritts/high/en_US-libritts-high.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/libritts/high/en_US-libritts-high.onnx",
       filename = "en/en_US/libritts/high/en_US-libritts-high.onnx", -- relative to cache folder
       speakers = {
         num = 904,
@@ -17,7 +17,7 @@ local voices = {
       }
     },
     ["arctic"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/arctic/medium/en_US-arctic-medium.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/arctic/medium/en_US-arctic-medium.onnx",
       filename = "en/en_US/arctic/medium/en_US-arctic-medium.onnx", -- relative to cache folder
       speakers = {
         num = 18,
@@ -26,7 +26,7 @@ local voices = {
       }
     },
     ["bryce"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/bryce/medium/en_US-bryce-medium.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/bryce/medium/en_US-bryce-medium.onnx",
       filename = "en/en_US/bryce/medium/en_US-bryce-medium.onnx", -- relative to cache folder
       speakers = {
         num = 1,
@@ -35,7 +35,7 @@ local voices = {
       }
     },
     ["danny"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/danny/low/en_US-danny-low.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/danny/low/en_US-danny-low.onnx",
       filename = "en/en_US/bryce/danny/low/en_US-danny-low.onnx", -- relative to cache folder
       speakers = {
         num = 1,
@@ -44,7 +44,7 @@ local voices = {
       }
     },
     ["hfc_male"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx",
       filename = "en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx", -- relative to cache folder
       speakers = {
         num = 1,
@@ -53,7 +53,7 @@ local voices = {
       }
     },
     ["joe"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/joe/medium/en_US-joe-medium.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/joe/medium/en_US-joe-medium.onnx",
       filename = "en/en_US/joe/medium/en_US-joe-medium.onnx", -- relative to cache folder
       speakers = {
         num = 1,
@@ -62,7 +62,7 @@ local voices = {
       }
     },
     ["john"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/john/medium/en_US-john-medium.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/john/medium/en_US-john-medium.onnx",
       filename = "en/en_US/john/medium/en_US-john-medium.onnx", -- relative to cache folder
       speakers = {
         num = 1,
@@ -71,7 +71,7 @@ local voices = {
       }
     },
     ["kusal"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/kusal/medium/en_US-kusal-medium.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/kusal/medium/en_US-kusal-medium.onnx",
       filename = "en/en_US/kusal/medium/en_US-kusal-medium.onnx", -- relative to cache folder
       speakers = {
         num = 1,
@@ -80,7 +80,7 @@ local voices = {
       }
     },
     ["norman"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/norman/medium/en_US-norman-medium.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/norman/medium/en_US-norman-medium.onnx",
       filename = "en/en_US/norman/medium/en_US-norman-medium.onnx", -- relative to cache folder
       speakers = {
         num = 1,
@@ -89,7 +89,7 @@ local voices = {
       }
     },
     ["ryan"] = {
-      url = "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ryan/medium/en_US-ryan-medium.onnx",
+      url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/medium/en_US-ryan-medium.onnx",
       filename = "en/en_US/ryan/medium/en_US-ryan-medium.onnx", -- relative to cache folder
       speakers = {
         num = 1,
