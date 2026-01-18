@@ -101,33 +101,60 @@ local voices = {
 }
 
 local figures = {
-  trader = { en = { voiceModel = voices.en["arctic"], speaker = 0 }}, -- for single speaker models 'speaker' could be omitted
-  hunter_ostrich = { en = { voiceModel = voices.en["arctic"], speaker = 1 }},
-  immigrant = { en = { voiceModel = voices.en["arctic"], speaker = 3 }},
-  emigrant = { en = { voiceModel = voices.en["arctic"], speaker = 6 }},
-  recruiter = { en = { voiceModel = voices.en["arctic"], speaker = 7 }},
-  barge = { en = { voiceModel = voices.en["arctic"], speaker = 8 }},
-  dancer = { en = { voiceModel = voices.en["arctic"], speaker = 9 }},
-  homeless = { en = { voiceModel = voices.en["arctic"], speaker = 10 }},
-  marketboy = { en = { voiceModel = voices.en["arctic"], speaker = 13 }},
-  engineer = { en = { voiceModel = voices.en["arctic"], speaker = 14 }},
-  fireman = { en = { voiceModel = voices.en["arctic"], speaker = 17 }},
-  policeman = { en = { voiceModel = voices.en["libritts"], speaker = 3 }},
-  lumberjack = { en = { voiceModel = voices.en["libritts"], speaker = 5 }},
-  musician = { en = { voiceModel = voices.en["libritts"], speaker = 6 }},
-  taxman = { en = { voiceModel = voices.en["libritts"], speaker = 7 }},
-  worker = { en = { voiceModel = voices.en["libritts"], speaker = 8 }},
-  doctor = { en = { voiceModel = voices.en["libritts"], speaker = 16 }},
-  water = { en = { voiceModel = voices.en["libritts"], speaker = 19 }},
-  osiris = { en = { voiceModel = voices.en["libritts"], speaker = 20 }},
-  ra = { en = { voiceModel = voices.en["libritts"], speaker = 22 }},
-  ptah = { en = { voiceModel = voices.en["libritts"], speaker = 24 }},
-  seth = { en = { voiceModel = voices.en["libritts"], speaker = 27 }},
-  bast = { en = { voiceModel = voices.en["libritts"], speaker = 28 }},
-  antelope_hunter = { en = { voiceModel = voices.en["libritts"], speaker = 31 }},
-  scriber = { en = { voiceModel = voices.en["libritts"], speaker = 32 }},
-  dentist = { en = { voiceModel = voices.en["libritts"], speaker = 34 }},
-  magistrate = { en = { voiceModel = voices.en["libritts"], speaker = 35 }}
+  ["trader"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 0 }}, -- for single speaker models 'speaker' could be omitted
+  ["hunter_ostrich"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 1 }},
+  ["immigrant"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 3 }},
+  ["emigrant"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 6 }},
+  ["recruiter"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 7 }},
+  ["barge"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 8 }},
+  ["dancer"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 9 }},
+  ["homeless"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 10 }},
+  ["marketboy"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 13 }},
+  ["engineer"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 14 }},
+  ["fireman"] = {
+    en = { voiceModel = voices.en["arctic"], speaker = 17 }},
+  ["policeman"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 3 }},
+  ["lumberjack"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 5 }},
+  ["musician"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 6 }},
+  ["taxman"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 7 }},
+  ["worker"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 8 }},
+  ["doctor"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 16 }},
+  ["water"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 19 }},
+  ["osiris"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 20 }},
+  ["ra"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 22 }},
+  ["ptah"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 24 }},
+  ["seth"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 27 }},
+  ["bast"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 28 }},
+  ["antelope_hunter"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 31 }},
+  ["scriber"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 32 }},
+  ["dentist"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 34 }},
+  ["magistrate"] = {
+    en = { voiceModel = voices.en["libritts"], speaker = 35 }}
 }
 
 config.voices = voices
