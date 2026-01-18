@@ -66,6 +66,12 @@ namespace
 			samplesCount += data.num_samples;
 		} while(true);
 
+		if (samplesCount == 0) {
+			fmt::println("For some reason, nothing was synthesized");
+			audioStream.close();
+			return false;
+		}
+
 		WAVHeader_PCM header(sampleRate, samplesCount);
 
 		// Write header at beginning
