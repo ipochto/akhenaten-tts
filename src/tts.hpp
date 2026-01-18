@@ -55,6 +55,9 @@ namespace tts
 				initialized = true;
 			}
 		}
+		Synthesizer(const Synthesizer&) = delete;
+		Synthesizer& operator=(const Synthesizer&) = delete;
+
 		~Synthesizer()
 		{
 			if(synth) {
