@@ -34,6 +34,6 @@ bool TTSConfig::parseConfigScript(const fs::path &configFile)
 		fmt::println("Voices definitions are missed in the config script.");
 		result = false;
 	}
-	loaded = true;
+	loaded = result;
 	return result;
 }
