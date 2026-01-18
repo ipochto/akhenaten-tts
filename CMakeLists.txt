@@ -16,13 +16,13 @@ include(CopyScripts)
 set(app_sources
     src/args_parser.cpp
     src/main.cpp
-    src/phrases_parser.cpp
     src/tts.cpp
+    src/tts-config.cpp
 )
 set(app_headers
-    src/phrases_parser.hpp
     src/script.hpp
     src/tts.hpp
+    src/tts-config.hpp
 )
 
 set(app_include_dirs
@@ -37,6 +37,7 @@ set(app_libraries
     libpiper_onnx
     lua::lua51
     sol2::sol2
+    cpr::cpr
 )
 
 add_executable(${app})

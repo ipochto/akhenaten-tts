@@ -22,20 +22,36 @@ if (NOT fmt_FOUND)
     FetchContent_MakeAvailable(fmt)
 endif()
 
+find_package(cpr CONFIG QUIET)
+if (NOT cpr_FOUND)
+    message(STATUS "cpr not found, fetching with FetchContent...")
+
+    set(CPR_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(CPR_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(CPR_CURL_USE_LIBPSL OFF CACHE BOOL "" FORCE) # requires Meson/PSL
+
+    FetchContent_Declare(
+        cpr
+        GIT_REPOSITORY https://github.com/libcpr/cpr.git
+        GIT_TAG        1.14.1
+    )
+    FetchContent_MakeAvailable(cpr)
+endif()
+
 FetchContent_Declare(
     lua51
     URL https://www.lua.org/ftp/lua-5.1.5.tar.gz
     URL_HASH SHA256=2640fc56a795f29d28ef15e13c34a47e223960b0240e8cb0a82d9b0738695333
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy
         "${CMAKE_SOURCE_DIR}/cmake/third-party/lua51-CMakeLists.txt"
-        "<SOURCE_DIR>/CMakeLists.txt"        
+        "<SOURCE_DIR>/CMakeLists.txt"
 )
 FetchContent_MakeAvailable(lua51)
 
 FetchContent_Declare(
-  sol2
-  GIT_REPOSITORY https://github.com/ThePhD/sol2.git
-  GIT_TAG        v3.5.0
+    sol2
+    GIT_REPOSITORY https://github.com/ThePhD/sol2.git
+    GIT_TAG        v3.5.0
 )
 FetchContent_MakeAvailable(sol2)
 

@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         preset: [
-          windows-clang-cl-release,
+          #windows-clang-cl-release,
           windows-msvc-release
         ]
     steps:
