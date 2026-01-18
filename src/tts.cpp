@@ -52,8 +52,12 @@ namespace
 		uint32_t samplesCount = 0;
 
 		do {
-			const auto &[done, data] = getNextChunk();
+			const auto &[done, isError, data] = getNextChunk();
 			if (done) {
+				break;
+			}
+			if (isError) {
+				fmt::println("An unknown error occurred during synthesizing.");
 				break;
 			}
 			if (sampleRate == 0) {
@@ -260,10 +264,10 @@ bool TTS::synthesize(const tts::SynthRequest &task)
 
 	auto synth = synthesizer.synth;
 	auto synthesizeChunk = [&]()
-		-> std::pair<bool, piper_audio_chunk&>
+		-> std::tuple<bool, bool, piper_audio_chunk&>
 	{
-		bool result = piper_synthesize_next(synth, &chunk) == PIPER_DONE;
-		return {result, chunk};
+		int result = piper_synthesize_next(synth, &chunk);
+		return {result == PIPER_DONE, result == PIPER_ERR_GENERIC, chunk};
 	};
 	return saveToWAV(synthesizeChunk, task.outputFilename);
 }
