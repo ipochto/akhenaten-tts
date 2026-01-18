@@ -253,7 +253,7 @@ bool TTS::synthesize(const tts::SynthRequest &task)
 	auto synthesizeChunk = [&]()
 		-> std::pair<bool, piper_audio_chunk&>
 	{
-		bool result = piper_synthesize_next(synth, &chunk) != PIPER_DONE;
+		bool result = piper_synthesize_next(synth, &chunk) == PIPER_DONE;
 		return {result, chunk};
 	};
 	return saveToWAV(synthesizeChunk, task.outputFilename);
