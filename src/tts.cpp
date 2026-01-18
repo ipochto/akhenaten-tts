@@ -233,7 +233,20 @@ bool TTS::synthesize(const tts::SynthRequest &task)
 	}
 	auto &[ID, synthesizer] = *synthIt;
 
-	piper_synthesize_start(synthesizer.synth, task.phrase.c_str(), &synthesizer.options);
+	if (!synthesizer) {
+		fmt::println("Piper synthesizer for figure: {}, lang: {} is not initialized",
+					 task.figure, task.lang);
+		return false;
+	}
+	
+	if (int result = piper_synthesize_start(synthesizer.synth,
+											task.phrase.c_str(),
+											&synthesizer.options);
+		result != PIPER_OK) {
+
+		fmt::println("Unable to start piper synthesizer, error code {}", result);
+		return false;
+	}
 	piper_audio_chunk chunk;
 
 	auto synth = synthesizer.synth;

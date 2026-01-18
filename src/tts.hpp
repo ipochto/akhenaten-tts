@@ -61,7 +61,7 @@ namespace tts
 				piper_free(synth);
 			}
 		}
-		operator bool() { return synth != nullptr; }
+		operator bool() { return initialized; }
 	};
 }
 
