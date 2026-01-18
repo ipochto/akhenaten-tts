@@ -54,7 +54,7 @@ bool parseCmdLineArguments(int argc, char* argv[], TTSConfig &config, tts::Synth
 	if (parsed.count("output")) {
 		synthRequest.outputFilename = fs::absolute(parsed["output"].as<fs::path>()).lexically_normal();
 	} else {
-		fmt::println("Language is required (--lang)");
+		fmt::println("Output filename is required (--output)");
 		resultOk = false;
 	}
 
