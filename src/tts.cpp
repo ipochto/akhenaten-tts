@@ -27,7 +27,7 @@ namespace
 			uint32_t dataSize;
 
 			WAVHeader_PCM(uint32_t sampleRate, uint32_t samples)
-			: sampleRate (sampleRate)
+				: sampleRate (sampleRate)
 			{
 				byteRate = sampleRate * blockAlign;
 				dataSize = samples * numChannels * bitsPerSample / 8;
@@ -41,12 +41,12 @@ namespace
 			return static_cast<int16_t>(x * 32767.0f);
 		};
 
-		std::ofstream audio_stream(filename, std::ios::binary);
-		if (!audio_stream) {
+		std::ofstream audioStream(filename, std::ios::binary);
+		if (!audioStream) {
 			fmt::println("Failed to create output audio file: {}", filename.string());
 			return false;
 		}
-		audio_stream.seekp(sizeof(WAVHeader_PCM), std::ios::beg); // Reserve space for header first
+		audioStream.seekp(sizeof(WAVHeader_PCM), std::ios::beg); // Reserve space for header first
 
 		uint32_t sampleRate = 0;
 		uint32_t samplesCount = 0;
@@ -61,7 +61,7 @@ namespace
 			}
 			for (size_t i = 0; i < data.num_samples; i++) {
 				const int16_t sample = floatToInt16(data.samples[i]);
-				audio_stream.write(reinterpret_cast<const char*>(&sample), sizeof(int16_t));
+				audioStream.write(reinterpret_cast<const char*>(&sample), sizeof(int16_t));
 			}
 			samplesCount += data.num_samples;
 		} while(true);
@@ -69,12 +69,74 @@ namespace
 		WAVHeader_PCM header(sampleRate, samplesCount);
 
 		// Write header at beginning
-		audio_stream.seekp(0, std::ios::beg);
-		audio_stream.write(reinterpret_cast<char*>(&header), sizeof(header));
-		audio_stream.close();
+		audioStream.seekp(0, std::ios::beg);
+		audioStream.write(reinterpret_cast<char*>(&header), sizeof(header));
+		audioStream.close();
 
 		return true;
 	}
+
+	bool downloadFile(const std::string &url, const fs::path &dstFilename)
+	{
+		const auto parent = dstFilename.parent_path();
+		if (!parent.empty()) {
+			std::error_code ec;
+			fs::create_directories(parent, ec);
+			if (ec) {
+				fmt::println("Unable to create directory \"{}\": {}", parent.string(), ec.message());
+				return false;
+			}
+		}
+		if (fs::exists(dstFilename)) {
+			fs::remove(dstFilename);
+		}
+		cpr::Session session;
+		session.SetUrl(cpr::Url{url});
+		session.SetRedirect(cpr::Redirect{true});
+		session.SetConnectTimeout(cpr::ConnectTimeout{10'000});
+		session.SetTimeout(cpr::Timeout{120'000});
+
+		std::ofstream dstFile(dstFilename, std::ios::binary);
+		if (!dstFile) {
+			fmt::println("Unable to open output file \"{}\"", dstFilename.string());
+			return false;
+		}
+		session.SetWriteCallback(cpr::WriteCallback{
+			[&dstFile](std::string_view data, intptr_t /*userdata*/) -> bool
+			{
+				if (!dstFile.good()) {
+					return false;
+				}
+				dstFile.write(data.data(), static_cast<std::streamsize>(data.size()));
+				if (!dstFile.good()) {
+					return false;
+				}
+				return true;
+			}
+		});
+
+		cpr::Response response = session.Get();
+
+		dstFile.close();
+
+		if (response.error.code != cpr::ErrorCode::OK) {
+			fs::remove(dstFilename);
+			fmt::println("Unable to download \"{}\", error: {}", url, response.error.message);
+			return false;
+		}
+		if (response.status_code < 200 || response.status_code >= 300) {
+			fs::remove(dstFilename);
+			fmt::println("Unable to download \"{}\": HTTP error: {}", url, response.status_code);
+			return false;
+		}
+		if (!dstFile.good()) {
+			fs::remove(dstFilename);
+			fmt::println("Failed to flush/close output file: \"{}\"", dstFilename.string());
+			return false;
+		}
+		return true;
+	}
+
 } // namespace
 
 auto  TTS::makeSynthConfig(const tts::Figure &figure, const tts::Language &lang)
@@ -96,7 +158,8 @@ auto  TTS::makeSynthConfig(const tts::Figure &figure, const tts::Language &lang)
 		return result;
 	}
 
-	result.voiceModel = (config->cachePath() / voiceCfg["voiceModel"]["filename"].get<std::string>()).lexically_normal();
+	result.voiceModel = (config->cachePath() / voiceCfg["voiceModel"]["filename"].get<std::string>())
+						.lexically_normal();
 
 	if (auto speakerID = voiceCfg["speaker"]; speakerID.valid()) {
 		result.speakerID = speakerID;
@@ -122,14 +185,15 @@ bool TTS::addSynthesizer(const SynthID &id)
 		return false;
 	}
 	if (!fs::exists(synthCfg.voiceModel) || !fs::exists(synthCfg.voiceModelCfg)) {
-
+		fmt::println("Downloading voice model files for [figure: \"{}\", language: \"{}\"]",
+					 figure, lang);
 		if (!fetchVoice(config->get()["figures"][figure][lang]["voiceModel"])) {
 			fmt::println("Unable fetch voice model files for [figure: \"{}\", language: \"{}\"]",
 						 figure, lang);
 			return false;
 		}
 	}
-	auto [insertedIt, result] = synthesizers.emplace(id, tts::Synthesizer(synthCfg));
+	auto [insertedIt, result] = synthesizers.emplace(id, synthCfg);
 	if (!result) {
 		fmt::println("Unable make synthesizer for [figure: \"{}\", language: \"{}\"]",
 					 figure, lang);
@@ -154,67 +218,6 @@ bool TTS::fetchVoice(sol::table voice)
 
 	if (!downloadFile(url + ".json", voiceModelCfgPath)) {
 		fmt::println("Unable to get voice model config file: \"{}\"", voiceModelCfgPath.string());
-		return false;
-	}
-	return true;
-}
-
-bool TTS::downloadFile(const std::string &url, const fs::path &dstFilename)
-{
-	const auto parent = dstFilename.parent_path();
-	if (!parent.empty()) {
-		std::error_code ec;
-		fs::create_directories(parent, ec);
-		if (ec) {
-			fmt::println("Unable to create directory \"{}\": {}", parent.string(), ec.message());
-			return false;
-		}
-	}
-	if (fs::exists(dstFilename)) {
-		fs::remove(dstFilename);
-	}
-	cpr::Session session;
-	session.SetUrl(cpr::Url{url});
-	session.SetRedirect(cpr::Redirect{true});
-	session.SetConnectTimeout(cpr::ConnectTimeout{10'000});
-	session.SetTimeout(cpr::Timeout{120'000});
-
-	std::ofstream dstFile(dstFilename, std::ios::binary);
-	if (!dstFile) {
-		fmt::println("Unable to open output file \"{}\"", dstFilename.string());
-		return false;
-	}
-	session.SetWriteCallback(cpr::WriteCallback{
-		[&dstFile](std::string_view data, intptr_t /*userdata*/) -> bool
-		{
-			if (!dstFile.good()) {
-				return false;
-			}
-			dstFile.write(data.data(), static_cast<std::streamsize>(data.size()));
-			if (!dstFile.good()) {
-				return false;
-			}
-			return true;
-		}
-	});
-
-	cpr::Response response = session.Get();
-
-	dstFile.close();
-
-	if (response.error.code != cpr::ErrorCode::OK) {
-		fs::remove(dstFilename);
-		fmt::println("Unable to download \"{}\", error: {}", url, response.error.message);
-		return false;
-	}
-	if (response.status_code < 200 || response.status_code >= 300) {
-		fs::remove(dstFilename);
-		fmt::println("Unable to download \"{}\": HTTP error: {}", url, response.status_code);
-		return false;
-	}
-	if (!dstFile.good()) {
-		fs::remove(dstFilename);
-		fmt::println("Failed to flush/close output file: \"{}\"", dstFilename.string());
 		return false;
 	}
 	return true;

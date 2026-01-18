@@ -90,5 +90,4 @@ private:
 
 	bool addSynthesizer(const SynthID &id);
 	bool fetchVoice(sol::table voice);
-	bool downloadFile(const std::string &url, const fs::path &dstFilename);
 };
