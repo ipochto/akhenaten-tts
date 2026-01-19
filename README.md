@@ -28,11 +28,18 @@ local voices = {
         female = { 0, 1, 4, 9, 10, 11, 12, 13, 14, 15, 17, 18, 21, 23, 25, 26, 29, 30, 33 } -- справочно
       }
     },
-
-["immigrant"] = {                       -- имя персонажа
-  en = {                                -- язык
-    voiceModel = voices.en["libritts"], -- модель должна быть определена в voices (см. выше)
-    speaker = 3 },                      -- спикер
-  ru = {}
-},
+    ...
+  }
+  ...
+}
+...
+local figures = {
+  ["immigrant"] = {                       -- имя персонажа
+    en = {                                -- язык
+      voiceModel = voices.en["libritts"], -- модель должна быть определена в voices (см. выше)
+      speaker = 3 },                      -- спикер
+    ru = {}
+  },
+  ...
+}
 ```
