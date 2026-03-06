@@ -55,4 +55,4 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(sol2)
 
-include(Libpiper)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Libpiper.cmake)

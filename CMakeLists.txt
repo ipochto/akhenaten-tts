@@ -3,15 +3,14 @@ project(akhenaten-tts LANGUAGES C CXX)
 set(app akhenaten-tts)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     message(WARNING "CMAKE_BUILD_TYPE is not set! Defaulting to Debug")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
 endif()
 
-include(ThirdPartyDependencies)
-include(CopyScripts)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ThirdPartyDependencies.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyScripts.cmake)
 
 set(app_sources
     src/args_parser.cpp
