@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script.hpp"
+#include "lua/runtime.hpp"
 
 #include <filesystem>
 #include <fmt/base.h>
@@ -10,15 +10,24 @@ namespace fs = std::filesystem;
 class TTSConfig
 {
 private:
-	sol::state lua;
+	LuaRuntime luaRuntime;
+	LuaSandbox lua;
+	inline static const fs::path allowAnyPath{"/"};
+	
 	bool loaded {false};
 
 	fs::path espeakData {};
 	fs::path cache {};
 
 public:
-	TTSConfig() = default;
+	TTSConfig() 
+		: luaRuntime(lua::memory::cDefaultMemLimit),
+		  lua(luaRuntime, LuaSandbox::Presets::Minimal, fs::current_path(), {allowAnyPath})
+	{}
+	
 	TTSConfig(const fs::path &configFile)
+		: luaRuntime(lua::memory::cDefaultMemLimit),
+		  lua(luaRuntime, LuaSandbox::Presets::Minimal, fs::current_path(), {allowAnyPath})
 	{
 		loaded = parseConfigScript(configFile);
 	}

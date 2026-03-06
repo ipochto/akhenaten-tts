@@ -7,7 +7,7 @@ bool TTSConfig::parseConfigScript(const fs::path &configFile)
 		return false;
 	}
 
-	lua["config"] = lua.script_file(configFile.string());
+	lua["config"] = lua.runFile(configFile.string());
 	if (!lua["config"].valid()) {
 		fmt::println("Lua: Unable to load specified configuration file: \"{}\"", configFile.string());
 		return false;
