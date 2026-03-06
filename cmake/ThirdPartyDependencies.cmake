@@ -39,20 +39,11 @@ if (NOT cpr_FOUND)
 endif()
 
 FetchContent_Declare(
-    lua51
-    URL https://www.lua.org/ftp/lua-5.1.5.tar.gz
-    URL_HASH SHA256=2640fc56a795f29d28ef15e13c34a47e223960b0240e8cb0a82d9b0738695333
-    PATCH_COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_SOURCE_DIR}/cmake/third-party/lua51-CMakeLists.txt"
-        "<SOURCE_DIR>/CMakeLists.txt"
+    luaSandboxes
+    GIT_REPOSITORY https://github.com/ipochto/luaSandboxes.git
+    GIT_TAG make-redisrtibutable
+    GIT_SHALLOW TRUE
 )
-FetchContent_MakeAvailable(lua51)
-
-FetchContent_Declare(
-    sol2
-    GIT_REPOSITORY https://github.com/ThePhD/sol2.git
-    GIT_TAG        v3.5.0
-)
-FetchContent_MakeAvailable(sol2)
+FetchContent_MakeAvailable(luaSandboxes)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Libpiper.cmake)

@@ -34,9 +34,8 @@ set(app_libraries
     fmt::fmt
     libpiper
     libpiper_onnx
-    lua::lua51
-    sol2::sol2
     cpr::cpr
+    luaSandboxes::luaSandboxes
 )
 
 add_executable(${app})
