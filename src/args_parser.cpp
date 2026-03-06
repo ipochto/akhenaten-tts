@@ -1,4 +1,3 @@
-#include "script.hpp"
 #include "tts.hpp"
 
 #include <cxxopts.hpp>
