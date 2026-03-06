@@ -48,7 +48,7 @@ target_sources(${app} PRIVATE
 )
 
 target_include_directories(${app} PUBLIC ${app_include_dirs})
-target_compile_features(${app} PRIVATE cxx_std_17)
+target_compile_features(${app} PRIVATE cxx_std_20)
 target_link_libraries(${app} PUBLIC ${app_libraries})
 
 
