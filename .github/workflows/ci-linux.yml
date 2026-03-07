@@ -9,7 +9,8 @@ jobs:
     strategy:
       matrix:
         preset: [
-            linux-clang-release
+            linux-clang-debug,
+            linux-gcc-release
         ]
 
     steps:
