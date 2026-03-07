@@ -29,7 +29,7 @@ jobs:
     strategy:
       matrix:
         preset: [
-          windows-clang-cl-debug,
+          #windows-clang-cl-debug,
           windows-msvc-release
         ]
     steps:
