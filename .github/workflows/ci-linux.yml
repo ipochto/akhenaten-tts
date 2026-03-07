@@ -2,6 +2,26 @@ name: CMake CI (Linux)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - '**'
+      - '!**.md'
+      - '!documentation/**'
+      - '!.vscode/**'
+      - '!*.yml'
+      - '!*.yaml'
+      - '.github/workflows/ci-linux.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '**'
+      - '!**.md'
+      - '!documentation/**'
+      - '!.vscode/**'
+      - '!*.yml'
+      - '!*.yaml'
+      - '.github/workflows/ci-linux.yml'
 
 jobs:
   build-linux:

@@ -2,6 +2,26 @@ name: CMake CI (Windows)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - '**'
+      - '!**.md'
+      - '!documentation/**'
+      - '!.vscode/**'
+      - '!*.yml'
+      - '!*.yaml'
+      - '.github/workflows/ci-windows.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '**'
+      - '!**.md'
+      - '!documentation/**'
+      - '!.vscode/**'
+      - '!*.yml'
+      - '!*.yaml'
+      - '.github/workflows/ci-windows.yml'
 
 jobs:
   build-windows:
