@@ -41,7 +41,7 @@ endif()
 FetchContent_Declare(
     luaSandboxes
     GIT_REPOSITORY https://github.com/ipochto/luaSandboxes.git
-    GIT_TAG make-redisrtibutable
+    GIT_TAG master
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(luaSandboxes)
