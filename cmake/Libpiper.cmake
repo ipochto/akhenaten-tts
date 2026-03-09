@@ -43,6 +43,9 @@ if (NOT PIPER_READY)
 
     list(JOIN PIPER_PATCHES "|" PIPER_PATCHES_SERIALIZED) # serialize list
 
+    # Set libpiper's espeak-ng dependency to a specific version to avoid breakages from upstream changes
+    set(ESPEAK_NG_GIT_TAG a06074c8fd80f2fd3632164dc01ebf1135395e11 CACHE STRING "espeak-ng git tag")
+
     ExternalProject_Add(libpiper_ext
         GIT_REPOSITORY https://github.com/OHF-Voice/piper1-gpl.git
         GIT_TAG        32b95f8c1f0dc0ce27a6acd1143de331f61af777
