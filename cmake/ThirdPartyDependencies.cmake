@@ -28,7 +28,11 @@ if (NOT cpr_FOUND)
 
     set(CPR_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(CPR_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(CPR_CURL_USE_LIBPSL OFF CACHE BOOL "" FORCE) # requires Meson/PSL
+    set(CPR_CURL_USE_LIBPSL OFF CACHE BOOL "" FORCE) # Disable because it requires Meson/PSL
+
+    if (WIN32)
+        set(CURL_WERROR OFF CACHE BOOL "" FORCE)
+    endif()
 
     FetchContent_Declare(
         cpr
@@ -36,6 +40,11 @@ if (NOT cpr_FOUND)
         GIT_TAG        1.14.1
     )
     FetchContent_MakeAvailable(cpr)
+
+    if (WIN32 AND TARGET cpr)
+        target_compile_options(cpr PRIVATE $<$<CXX_COMPILER_ID:Clang,GNU>:-Wno-error>)
+    endif()
+
 endif()
 
 FetchContent_Declare(
