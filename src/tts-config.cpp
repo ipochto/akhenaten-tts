@@ -13,7 +13,7 @@ bool TTSConfig::parseConfigScript(const fs::path &configFile)
 		return false;
 	}
 
-	bool result {true};
+	bool result{true};
 
 	const std::string espeakDataStr = lua["config"]["espeakData"];
 	espeakData = fs::absolute(espeakDataStr).lexically_normal();

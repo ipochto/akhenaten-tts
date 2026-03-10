@@ -31,7 +31,7 @@ namespace tts
 		fs::path voiceModelCfg;
 		fs::path espeakData;
 
-		int speakerID {0};
+		int speakerID{0};
 
 		operator bool() const {
 			return !voiceModel.empty() && !voiceModelCfg.empty() && !espeakData.empty();
@@ -40,9 +40,9 @@ namespace tts
 
 	struct Synthesizer
 	{
-		bool initialized {false};
-		piper_synthesizer *synth {nullptr};
-		piper_synthesize_options options {};
+		bool initialized{false};
+		piper_synthesizer *synth{nullptr};
+		piper_synthesize_options options{};
 
 		Synthesizer(const SynthesizerConfig &cfg)
 		{

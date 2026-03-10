@@ -14,10 +14,10 @@ private:
 	LuaSandbox lua;
 	inline static const fs::path allowAnyPath{"/"};
 	
-	bool loaded {false};
+	bool loaded{false};
 
-	fs::path espeakData {};
-	fs::path cache {};
+	fs::path espeakData{};
+	fs::path cache{};
 
 public:
 	TTSConfig() 
