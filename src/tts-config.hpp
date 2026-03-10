@@ -12,6 +12,8 @@ class TTSConfig
 private:
 	LuaRuntime luaRuntime;
 	LuaSandbox lua;
+
+	// FIXME: This is a temporary solution to allow loading config scripts from any location.
 	inline static const fs::path allowAnyPath{"/"};
 	
 	bool loaded{false};
@@ -26,8 +28,7 @@ public:
 	{}
 	
 	TTSConfig(const fs::path &configFile)
-		: luaRuntime(lua::memory::cDefaultMemLimit),
-		  lua(luaRuntime, LuaSandbox::Presets::Minimal, fs::current_path(), {allowAnyPath})
+		: TTSConfig()
 	{
 		loaded = parseConfigScript(configFile);
 	}
