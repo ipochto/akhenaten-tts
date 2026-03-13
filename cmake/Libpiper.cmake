@@ -41,6 +41,13 @@ if (NOT PIPER_READY)
         )
     endif()
 
+    if(APPLE)
+        list(APPEND PIPER_PATCHES
+            "${CMAKE_SOURCE_DIR}/cmake/third-party/patches/005-piper-add-espeak-ng-patch-macos.patch"
+        )
+    endif()
+
+
     list(JOIN PIPER_PATCHES "|" PIPER_PATCHES_SERIALIZED) # serialize list
 
     # Set libpiper's espeak-ng dependency to a specific version to avoid breakages from upstream changes
