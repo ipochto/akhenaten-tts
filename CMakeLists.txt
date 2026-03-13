@@ -67,7 +67,7 @@ if(is_clang AND CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
 endif()
 
 # Platform- and config-specific compile options
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+if((CMAKE_SYSTEM_NAME STREQUAL "Linux" OR APPLE) AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(${app} PRIVATE
         -fno-inline
         -fstack-protector-strong
