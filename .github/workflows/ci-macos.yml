@@ -1,0 +1,50 @@
+name: CMake CI (macOS)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - '**'
+      - '!**.md'
+      - '!documentation/**'
+      - '!.vscode/**'
+      - '!*.yml'
+      - '!*.yaml'
+      - '.github/workflows/ci-macos.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '**'
+      - '!**.md'
+      - '!documentation/**'
+      - '!.vscode/**'
+      - '!*.yml'
+      - '!*.yaml'
+      - '.github/workflows/ci-macos.yml'
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        preset: [
+            macos-clang-debug
+        ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake --preset=${{ matrix.preset }}
+
+      - name: Build
+        run: cmake --build --preset=${{ matrix.preset }} -- -j$(sysctl -n hw.logicalcpu) --verbose
+
+      - name: Show files
+        working-directory: build/bin
+        run: |
+          ls
+          tree -a voices || true
+

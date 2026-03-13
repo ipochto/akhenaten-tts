@@ -2,7 +2,7 @@ diff --git a/libpiper/CMakeLists.txt b/libpiper/CMakeLists.txt
 index 57349c1..74f0140 100644
 --- a/libpiper/CMakeLists.txt
 +++ b/libpiper/CMakeLists.txt
-@@ -8,23 +8,44 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+@@ -8,23 +8,47 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
  include(ExternalProject)
  
  # Install location for espeak-ng
@@ -25,13 +25,16 @@ index 57349c1..74f0140 100644
      set(UCD_STATIC_LIB ${ESPEAKNG_BUILD_DIR}/src/espeak_ng_external-build/src/ucd-tools/libucd.a)
  endif()
  
++find_package(Git REQUIRED)
 +if(WIN32)
-+    find_package(Git REQUIRED)
 +    set(ESPEAKNG_PATCH_MSG "Patching espeak-ng for fixing Windows build")
 +    set(ESPEAKNG_PATCH_CMD ${GIT_EXECUTABLE} apply ${CMAKE_CURRENT_LIST_DIR}/cmake/patches/espeak-ng-static-win.patch)
 +endif()
 +
-+find_package(Git REQUIRED)
++if(APPLE)
++    set(ESPEAKNG_PATCH_MSG "Patching espeak-ng for fixing macOS build")
++    set(ESPEAKNG_PATCH_CMD ${GIT_EXECUTABLE} apply ${CMAKE_CURRENT_LIST_DIR}/cmake/patches/espeak-ng-macos.patch)
++endif()
 +
  ExternalProject_Add(espeak_ng_external
      GIT_REPOSITORY https://github.com/espeak-ng/espeak-ng.git
