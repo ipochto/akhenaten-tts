@@ -22,6 +22,8 @@ akhenaten-tts --figure immigrant --lang en --phrase "Who the heck are you?" --ou
 
 As needed, voice model files are searched in the cache; if not there, they are downloaded automatically.
 
+**NB:** If your IP address is located in the Russian Federation, downloading voice models may require connecting through a VPN. Alternatively, you can download them via a browser and place them manually into the `voices` folder. The exact path is specified by the `filename` parameter in the configuration script (see below).
+
 Generally, you can experiment with different voices. 
 First, select them [here](https://rhasspy.github.io/piper-samples/), then specify them in [tts-config.lua](src/scripts/tts-config.lua).
 
