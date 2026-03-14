@@ -100,3 +100,26 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         target_compile_options(${app} PRIVATE /MP)
     endif()
 endif()
+
+set(APP_PORTABLE_DIR "${CMAKE_BINARY_DIR}/portable")
+
+add_custom_target(portable_package
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_PORTABLE_DIR}/lib"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:${app}>"
+        "${APP_PORTABLE_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/src/scripts/tts-config.lua"
+        "${APP_PORTABLE_DIR}/"    
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PIPER_INSTALL_DIR}/espeak-ng-data"
+        "${APP_PORTABLE_DIR}/espeak-ng-data"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_PROPERTY:libpiper,IMPORTED_LOCATION>"
+        "${APP_PORTABLE_DIR}/lib"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_PROPERTY:libpiper_onnx,IMPORTED_LOCATION>"
+        "${APP_PORTABLE_DIR}/lib"
+    DEPENDS ${app}
+    VERBATIM
+)
