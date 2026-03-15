@@ -50,6 +50,13 @@ target_include_directories(${app} PUBLIC ${app_include_dirs})
 target_compile_features(${app} PRIVATE cxx_std_20)
 target_link_libraries(${app} PUBLIC ${app_libraries})
 
+# Ensure portable binary can resolve bundled shared libraries from ./lib.
+if(APPLE)
+    set_property(TARGET ${app} APPEND PROPERTY BUILD_RPATH "@executable_path/lib")
+elseif(UNIX)
+    set_property(TARGET ${app} APPEND PROPERTY BUILD_RPATH "\$ORIGIN/lib")
+endif()
+
 
 # Debug vs Release definitions
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -100,9 +107,15 @@ elseif(WIN32)
 endif()
 
 set(APP_PORTABLE_DIR "${CMAKE_BINARY_DIR}/portable")
+if(UNIX)
+    set(APP_PORTABLE_LIBS_DIR "${APP_PORTABLE_DIR}/lib")
+else()
+    set(APP_PORTABLE_LIBS_DIR "${APP_PORTABLE_DIR}")
+endif()
 
 add_custom_target(portable_package
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_PORTABLE_DIR}/lib"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_PORTABLE_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_PORTABLE_LIBS_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:${app}>"
         "${APP_PORTABLE_DIR}/"
@@ -114,10 +127,10 @@ add_custom_target(portable_package
         "${APP_PORTABLE_DIR}/espeak-ng-data"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_PROPERTY:libpiper,IMPORTED_LOCATION>"
-        "${APP_PORTABLE_DIR}/lib"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_PROPERTY:libpiper_onnx,IMPORTED_LOCATION>"
-        "${APP_PORTABLE_DIR}/lib"
+        "${APP_PORTABLE_LIBS_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PIPER_INSTALL_DIR}/lib"
+        "${APP_PORTABLE_LIBS_DIR}/"
     DEPENDS ${app}
     VERBATIM
 )

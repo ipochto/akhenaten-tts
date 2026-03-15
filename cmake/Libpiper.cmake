@@ -106,6 +106,14 @@ else()
     )
 endif()
 
+# Ensure portable binary can resolve bundled shared libraries from ./
+if(APPLE)
+    set_property(TARGET libpiper APPEND PROPERTY BUILD_RPATH "@loader_path")
+elseif(UNIX)
+    set_property(TARGET libpiper APPEND PROPERTY BUILD_RPATH "\$ORIGIN")
+endif()
+
+
 # ONNX Runtime library shipped by Piper (already downloaded by ExternalProject)
 add_library(libpiper_onnx SHARED IMPORTED)
 

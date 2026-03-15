@@ -48,5 +48,4 @@ jobs:
         shell: pwsh
         working-directory: build/portable
         run: |
-          akhenaten-tts.exe --figure immigrant --lang en --phrase "Who the heck are you?" --output immigrant-hello-stranger.wav
-          Get-ChildItem
+          .\akhenaten-tts.exe --figure immigrant --lang en --phrase "Who the heck are you?" --output immigrant-hello-stranger.wav
