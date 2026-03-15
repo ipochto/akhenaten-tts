@@ -27,6 +27,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         preset: [
             linux-clang-debug,
