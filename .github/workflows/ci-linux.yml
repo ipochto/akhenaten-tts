@@ -30,6 +30,8 @@ jobs:
       matrix:
         preset: [
             linux-clang-debug,
+            linux-clang-release,
+            linux-gcc-debug,
             linux-gcc-release
         ]
 
@@ -56,6 +58,7 @@ jobs:
       - name: Run
         working-directory: build/portable
         run: |
+          ls lib/ -la
           ldd akhenaten-tts
           ./akhenaten-tts --figure immigrant --lang en --phrase "Who the heck are you?" --output immigrant-hello-stranger.wav
           ls -la
