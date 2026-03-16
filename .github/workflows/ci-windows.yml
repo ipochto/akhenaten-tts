@@ -49,6 +49,8 @@ jobs:
 
       - name: Run
         shell: pwsh
-        working-directory: build/portable
+        working-directory: build/bin/portable
         run: |
+          Get-ChildItem -Force
           .\akhenaten-tts.exe --figure immigrant --lang en --phrase "Who the heck are you?" --output immigrant-hello-stranger.wav
+          Get-ChildItem -Force
