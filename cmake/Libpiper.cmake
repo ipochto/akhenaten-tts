@@ -150,28 +150,3 @@ endif()
 
 add_dependencies(libpiper libpiper_ext)
 add_dependencies(libpiper_onnx libpiper_ext)
-
-set(PIPER_ASSETS_SRCDIR ${PIPER_INSTALL_DIR}/espeak-ng-data)
-set(PIPER_ASSETS_DSTDIR ${CMAKE_BINARY_DIR}/bin/espeak-ng-data)
-
-set(COPY_PIPER_ASSETS_DEP "")
-
-if (TARGET libpiper_ext)
-    set(COPY_PIPER_ASSETS_DEP libpiper_ext)
-else()
-    set(COPY_PIPER_ASSETS_DEP "${PIPER_ASSETS_READY_STAMP}")
-endif()
-
-set(PIPER_ASSETS_COPIED_STAMP "${PIPER_ASSETS_DSTDIR}/.assets_copied")
-
-# Copy espeak-ng-data to ${app} binary dir
-add_custom_command(
-    OUTPUT ${PIPER_ASSETS_COPIED_STAMP}
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${PIPER_ASSETS_DSTDIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${PIPER_ASSETS_SRCDIR}" "${PIPER_ASSETS_DSTDIR}"
-    COMMAND ${CMAKE_COMMAND} -E touch "${PIPER_ASSETS_COPIED_STAMP}"
-    DEPENDS ${COPY_PIPER_ASSETS_DEP}
-    COMMENT "Copying Piper assets to bin/"
-    VERBATIM
-)
-add_custom_target(copy_piper_assets ALL DEPENDS ${PIPER_ASSETS_COPIED_STAMP})

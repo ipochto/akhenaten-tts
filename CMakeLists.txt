@@ -106,7 +106,7 @@ elseif(WIN32)
     endif()
 endif()
 
-set(APP_PORTABLE_DIR "${CMAKE_BINARY_DIR}/portable")
+set(APP_PORTABLE_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/portable")
 if(UNIX)
     set(APP_PORTABLE_LIBS_DIR "${APP_PORTABLE_DIR}/lib")
 else()
