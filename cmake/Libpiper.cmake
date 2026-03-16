@@ -107,14 +107,6 @@ if (NOT PIPER_READY)
     )
 
     file(MAKE_DIRECTORY ${PIPER_INSTALL_DIR}/include)
-
-    set(PIPER_ASSETS_READY_STAMP "${PIPER_INSTALL_DIR}/.piper_assets_ready.stamp")
-
-    ExternalProject_Add_Step(libpiper_ext mark_assets_ready
-        COMMAND ${CMAKE_COMMAND} -E touch "${PIPER_ASSETS_READY_STAMP}"
-        DEPENDEES install
-        ALWAYS 0
-    )
 endif()
 
 # libpiper

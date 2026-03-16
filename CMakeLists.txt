@@ -12,7 +12,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ThirdPartyDependencies.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyScripts.cmake)
 
 set(app_sources
     src/args_parser.cpp
