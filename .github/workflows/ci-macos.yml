@@ -27,9 +27,11 @@ jobs:
   build-macos:
     runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
         preset: [
-            macos-clang-debug
+            macos-clang-debug,
+            macos-clang-release
         ]
 
     steps:
@@ -40,11 +42,20 @@ jobs:
         run: cmake --preset=${{ matrix.preset }}
 
       - name: Build
-        run: cmake --build --preset=${{ matrix.preset }} -- -j$(sysctl -n hw.logicalcpu) --verbose
+        run: cmake --build --preset=${{ matrix.preset }} --target portable_package --parallel -- --verbose
 
-      - name: Show files
-        working-directory: build/bin
+      - name: Run
+        working-directory: build/bin/portable
         run: |
-          ls
-          tree -a voices || true
+          echo "Removing _deps for strict portable runtime test"
+          rm -rf ../../_deps
 
+          echo "Running akhenaten-tts..."
+          ./akhenaten-tts --figure immigrant --lang en --phrase "Who the heck are you?" --output immigrant-hello-stranger.wav
+
+          if [ -f immigrant-hello-stranger.wav ]; then
+            echo "Output wav-file found. Test passed."
+          else
+            echo "Unable to find output wav-file. Test failed."
+            exit 1
+          fi

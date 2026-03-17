@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.30)
 project(akhenaten-tts LANGUAGES C CXX)
 set(app akhenaten-tts)
 
+option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -10,7 +12,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ThirdPartyDependencies.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyScripts.cmake)
 
 set(app_sources
     src/args_parser.cpp
@@ -48,6 +49,13 @@ target_include_directories(${app} PUBLIC ${app_include_dirs})
 target_compile_features(${app} PRIVATE cxx_std_20)
 target_link_libraries(${app} PUBLIC ${app_libraries})
 
+# Ensure portable binary can resolve bundled shared libraries from ./lib.
+if(APPLE)
+    set_property(TARGET ${app} APPEND PROPERTY BUILD_RPATH "@executable_path/lib")
+elseif(UNIX)
+    set_property(TARGET ${app} APPEND PROPERTY BUILD_RPATH "\$ORIGIN/lib")
+endif()
+
 
 # Debug vs Release definitions
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -67,7 +75,7 @@ if(is_clang AND CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
 endif()
 
 # Platform- and config-specific compile options
-if((CMAKE_SYSTEM_NAME STREQUAL "Linux" OR APPLE) AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(UNIX AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(${app} PRIVATE
         -fno-inline
         -fstack-protector-strong
@@ -83,9 +91,7 @@ if((CMAKE_SYSTEM_NAME STREQUAL "Linux" OR APPLE) AND CMAKE_BUILD_TYPE STREQUAL "
     elseif(is_clang)
         target_compile_options(${app} PRIVATE -glldb)
     endif()
-endif()
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+elseif(WIN32)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND is_msvc)
         target_compile_options(${app} PRIVATE
             /Oy-
@@ -94,7 +100,36 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             /Zc:strictStrings
         )
     endif()
-    if(is_msvc)
+    if(is_msvc AND NOT is_clang)
         target_compile_options(${app} PRIVATE /MP)
     endif()
 endif()
+
+set(APP_PORTABLE_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/portable")
+if(UNIX)
+    set(APP_PORTABLE_LIBS_DIR "${APP_PORTABLE_DIR}/lib")
+else()
+    set(APP_PORTABLE_LIBS_DIR "${APP_PORTABLE_DIR}")
+endif()
+
+add_custom_target(portable_package
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_PORTABLE_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_PORTABLE_LIBS_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:${app}>"
+        "${APP_PORTABLE_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/src/scripts/tts-config.lua"
+        "${APP_PORTABLE_DIR}/"    
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PIPER_INSTALL_DIR}/espeak-ng-data"
+        "${APP_PORTABLE_DIR}/espeak-ng-data"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_PROPERTY:libpiper,IMPORTED_LOCATION>"
+        "${APP_PORTABLE_LIBS_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_PROPERTY:libpiper_onnx,IMPORTED_LOCATION>"
+        "${APP_PORTABLE_LIBS_DIR}/"
+    DEPENDS ${app}
+    VERBATIM
+)

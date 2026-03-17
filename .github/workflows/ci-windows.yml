@@ -27,9 +27,12 @@ jobs:
   build-windows:
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
         preset: [
           windows-clang-cl-debug,
+          windows-clang-cl-release,
+          windows-msvc-debug,
           windows-msvc-release
         ]
     steps:
@@ -37,18 +40,28 @@ jobs:
         uses: actions/checkout@v4
 
       # windows-latest already has Ninja, clang-cl, and msvc environment
-     
+
       - name: Configure CMake
         run: cmake --preset=${{ matrix.preset }}
 
       - name: Build
-        run: cmake --build --preset=${{ matrix.preset }} --verbose
+        run: cmake --build --preset=${{ matrix.preset }} --target portable_package --parallel --verbose
 
-      - name: Show files
+      - name: Run
         shell: pwsh
-        working-directory: build/bin
+        working-directory: build/bin/portable
         run: |
-          Get-ChildItem
-          if (Test-Path voices) {
-            tree /A /F voices
+          Write-Host "Removing _deps for strict portable runtime test"
+          if (Test-Path "..\..\_deps") {
+            Remove-Item "..\..\_deps" -Recurse -Force
+          }
+
+          Write-Host "Running akhenaten-tts.exe..."
+          .\akhenaten-tts.exe --figure immigrant --lang en --phrase "Who the heck are you?" --output immigrant-hello-stranger.wav
+
+          if (Test-Path "immigrant-hello-stranger.wav") {
+            Write-Host "Output wav-file found. Test passed."
+          } else {
+            Write-Host "Unable to find output wav-file. Test failed."
+            exit 1
           }

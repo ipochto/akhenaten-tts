@@ -1,4 +1,3 @@
-
 # Akhenaten-TTS
 
 Akhenaten-TTS is a text-to-speech CLI-utility that allows generating audio from text using various voice models. It supports multiple languages and characters, with automatic downloading of voice models.
@@ -61,8 +60,9 @@ This project uses CMake for building. Ensure you have CMake 3.30 or later instal
 
 ### Prerequisites
 - CMake 3.30+
-- C++20 compatible compiler (e.g., GCC, Clang, MSVC)
-- Dependencies are downloaded automatically via CMake.
+- A C++20-compatible compiler (GCC, Clang, MSVC, or clang-cl)
+- Ninja (for presets that use the Ninja generator)
+- Dependencies are downloaded automatically by CMake.
 
 ### Build Steps
 1. Clone the repository:
@@ -70,14 +70,35 @@ This project uses CMake for building. Ensure you have CMake 3.30 or later instal
 git clone https://github.com/ipochto/akhenaten-tts.git
 cd akhenaten-tts
 ```
-2. Run the following commands:
+2. Configure:
 ```bash
 cmake --preset linux-gcc-release
-cmake --build build
+```
+3. Build portable package:
+```bash
+cmake --build --preset linux-gcc-release --target portable_package --parallel
+```
+4. Run:
+```bash
+cd build/bin/portable
+./akhenaten-tts --figure immigrant --lang en --phrase "Who the heck are you?" --output immigrant-hello-stranger.wav
 ```
 
-Also presets available:\
-`linux-clang-release`, `windows-msvc-release`, `windows-clang-cl-release`, `macos-clang-release`\
-Check [CMakePresets.json](CMakePresets.json) for more.
+### Presets
+Common presets:
+- Linux: `linux-gcc-debug`, `linux-gcc-release`, `linux-clang-debug`, `linux-clang-release`
+- macOS: `macos-clang-debug`, `macos-clang-release`
+- Windows: `windows-msvc-debug`, `windows-msvc-release`, `windows-clang-cl-debug`, `windows-clang-cl-release`
 
-The executable and resource files will be placed in `build/bin/`.
+See all available presets in [CMakePresets.json](CMakePresets.json).
+
+### Portable package layout
+The `portable_package` target creates a self-contained runtime in `build/bin/portable`:
+- `akhenaten-tts` or `akhenaten-tts.exe`
+- `tts-config.lua`
+- `espeak-ng-data/`
+- bundled runtime libraries:
+  - Linux/macOS: `build/bin/portable/lib/`
+  - Windows: `build/bin/portable/`
+
+Voice models are downloaded on demand to the cache path defined in `tts-config.lua`.

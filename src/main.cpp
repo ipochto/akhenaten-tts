@@ -1,5 +1,7 @@
 #include "tts.hpp"
 
+#include <iostream>
+
 bool parseCmdLineArguments(int argc, char* argv[], TTSConfig &config, tts::SynthRequest &synthRequest);
 
 int main(int argc, char* argv[])
@@ -12,6 +14,7 @@ int main(int argc, char* argv[])
 	}
 	TTS synth(config);
 	if (!synth.synthesize(reqToSynth)) {
+		std::cerr << "Failed to synthesize audio.\n";
 		return 1;
 	}
 	return 0;

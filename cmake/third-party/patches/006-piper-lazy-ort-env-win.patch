@@ -1,0 +1,54 @@
+diff --git a/libpiper/include/piper_impl.hpp b/libpiper/include/piper_impl.hpp
+--- a/libpiper/include/piper_impl.hpp
++++ b/libpiper/include/piper_impl.hpp
+@@ -35,7 +35,7 @@ const float DEFAULT_NOISE_W_SCALE = 0.8f;
+ const int DEFAULT_HOP_LENGTH = 256;
+ 
+ // onnx
+-Ort::Env ort_env{ORT_LOGGING_LEVEL_WARNING, "piper"};
++Ort::Env &get_ort_env();
+ 
+ // espeak
+ #define CLAUSE_INTONATION_FULL_STOP 0x00000000
+diff --git a/libpiper/src/piper.cpp b/libpiper/src/piper.cpp
+--- a/libpiper/src/piper.cpp
++++ b/libpiper/src/piper.cpp
+@@ -4,10 +4,16 @@
+ #include <array>
+ #include <fstream>
+ #include <limits>
++#include <string_view>
+ 
+ #include <espeak-ng/speak_lib.h>
+ 
+ using json = nlohmann::json;
++
++Ort::Env &get_ort_env() {
++    static Ort::Env env{ORT_LOGGING_LEVEL_WARNING, "piper"};
++    return env;
++}
+ 
+ struct piper_synthesizer *piper_create(const char *model_path,
+                                        const char *config_path,
+@@ -95,13 +101,18 @@ struct piper_synthesizer *piper_create(const char *model_path,
+     synth->session_options.DisableProfiling();
+ 
+ #if defined(_WIN32)
+     auto model_path_strv = std::string_view(model_path);
+     const auto model_path_wstr = std::wstring(model_path_strv.begin(), model_path_strv.end());
+     const auto model_path_ort = model_path_wstr.c_str();
+ #else
+     const auto model_path_ort = model_path;
+ #endif
+-    synth->session = std::make_unique<Ort::Session>(
+-        Ort::Session(ort_env, model_path_ort, synth->session_options));
++    try {
++        synth->session = std::make_unique<Ort::Session>(
++            Ort::Session(get_ort_env(), model_path_ort, synth->session_options));
++    } catch (...) {
++        delete synth;
++        return nullptr;
++    }
+ 
+     return synth;
+ }

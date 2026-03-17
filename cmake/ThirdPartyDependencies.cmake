@@ -15,6 +15,9 @@ find_package(cpr CONFIG QUIET)
 if (NOT cpr_FOUND)
     message(STATUS "cpr not found, fetching with FetchContent...")
 
+    find_package(CURL QUIET)    
+    set(CPR_USE_SYSTEM_CURL ${CURL_FOUND} CACHE BOOL "" FORCE)
+
     set(CPR_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(CPR_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(CPR_CURL_USE_LIBPSL OFF CACHE BOOL "" FORCE) # Disable because it requires Meson/PSL
