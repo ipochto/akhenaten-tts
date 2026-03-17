@@ -68,6 +68,27 @@ jobs:
           } else {
             Write-Host "ONNX Runtime lib dir not found at $onnxLibDir"
           }
+          function Test-DllLoad([string]$dllName) {
+            if (-not (Test-Path $dllName)) {
+              Write-Host "[MISS] $dllName"
+              return
+            }
+            try {
+              $fullPath = (Resolve-Path $dllName).Path
+              $handle = [System.Runtime.InteropServices.NativeLibrary]::Load($fullPath)
+              [System.Runtime.InteropServices.NativeLibrary]::Free($handle)
+              Write-Host "[OK]   $dllName"
+            } catch {
+              Write-Host "[FAIL] $dllName :: $($_.Exception.Message)"
+            }
+          }
+          Write-Host "DLL load preflight:"
+          Test-DllLoad "akhenaten-tts.exe"
+          Test-DllLoad "piper.dll"
+          Test-DllLoad "onnxruntime.dll"
+          Test-DllLoad "onnxruntime_providers_shared.dll"
+          Test-DllLoad "libcurl.dll"
+          Test-DllLoad "zlib1.dll"            
           Get-ChildItem -Force
           .\akhenaten-tts.exe --figure immigrant --lang en --phrase "Who the heck are you?" --output immigrant-hello-stranger.wav
           Get-ChildItem -Force
