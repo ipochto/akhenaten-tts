@@ -55,13 +55,6 @@ jobs:
         shell: pwsh
         working-directory: build/bin/portable
         run: |
-          $providersDll = "..\..\_deps\libpiper_ext\install\lib\onnxruntime_providers_shared.dll"
-          if (Test-Path $providersDll) {
-            Copy-Item -Path $providersDll -Destination .\ -Force
-            Write-Host "Copied $providersDll to $(Get-Location)"
-          } else {
-            Write-Host "Providers DLL not found at $providersDll"
-          }
           Get-ChildItem -Force
           .\akhenaten-tts.exe --figure immigrant --lang en --phrase "Who the heck are you?" --output immigrant-hello-stranger.wav
           Get-ChildItem -Force
