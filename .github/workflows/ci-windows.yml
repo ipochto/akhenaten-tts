@@ -41,12 +41,8 @@ jobs:
 
       # windows-latest already has Ninja, clang-cl, and msvc environment
 
-      # Install curl
-      - name: Install curl
-        run: vcpkg install curl:x64-windows
-
       - name: Configure CMake
-        run: cmake --preset=${{ matrix.preset }} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+        run: cmake --preset=${{ matrix.preset }}
 
       - name: Build
         run: cmake --build --preset=${{ matrix.preset }} --target portable_package --parallel --verbose
@@ -55,24 +51,19 @@ jobs:
         shell: pwsh
         working-directory: build/bin/portable
         run: |
-          $vcpkgRoot = "C:\vcpkg\installed\x64-windows"
-          $vcpkgRuntimeDirs = @(
-            "$vcpkgRoot\bin",
-            "$vcpkgRoot\debug\bin"
-          )
-          foreach ($vcpkgBinDir in $vcpkgRuntimeDirs) {
-            if (Test-Path $vcpkgBinDir) {
-              $vcpkgDlls = Get-ChildItem -Path $vcpkgBinDir -Filter "*.dll" -File
-              if ($vcpkgDlls.Count -gt 0) {
-                Copy-Item -Path $vcpkgDlls.FullName -Destination .\ -Force
-                Write-Host "Copied vcpkg runtime DLLs from $vcpkgBinDir to $(Get-Location):"
-                $vcpkgDlls | Select-Object -ExpandProperty Name | ForEach-Object { Write-Host "  - $_" }
-              } else {
-                Write-Host "No *.dll files found in $vcpkgBinDir"
-              }
-            } else {
-              Write-Host "vcpkg runtime dir not found at $vcpkgBinDir"
-            }
+          $buildRoot = "..\.."
+          $runtimePatterns = @("libcurl*.dll", "zlib*.dll")
+          $runtimeDlls = @()
+          foreach ($pattern in $runtimePatterns) {
+            $runtimeDlls += Get-ChildItem -Path $buildRoot -Recurse -Filter $pattern -File -ErrorAction SilentlyContinue
+          }
+          $runtimeDlls = @($runtimeDlls | Sort-Object -Property FullName -Unique)
+          if ($runtimeDlls.Count -gt 0) {
+            Copy-Item -Path $runtimeDlls.FullName -Destination .\ -Force
+            Write-Host "Copied locally built curl/zlib DLLs from $buildRoot to $(Get-Location):"
+            $runtimeDlls | ForEach-Object { Write-Host "  - $($_.Name) <= $($_.DirectoryName)" }
+          } else {
+            Write-Host "No locally built curl/zlib DLLs found under $buildRoot"
           }
 
           $onnxLibDir = "..\..\_deps\libpiper_ext\install\lib"
