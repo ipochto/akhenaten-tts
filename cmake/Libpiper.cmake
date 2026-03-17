@@ -45,6 +45,7 @@ if (NOT PIPER_READY)
             "${CMAKE_SOURCE_DIR}/cmake/third-party/patches/002-piper-dll-export-symbols-win.patch"
             "${CMAKE_SOURCE_DIR}/cmake/third-party/patches/003-piper-wchar-fix-win.patch"
             "${CMAKE_SOURCE_DIR}/cmake/third-party/patches/004-piper-add-espeak-ng-patch-win.patch"
+            "${CMAKE_SOURCE_DIR}/cmake/third-party/patches/006-piper-lazy-ort-env-win.patch"
         )
     elseif(APPLE)
         list(APPEND PIPER_PATCHES
