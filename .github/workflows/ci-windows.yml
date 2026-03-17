@@ -102,6 +102,10 @@ jobs:
           Test-DllLoad "libcurl-d.dll"
           Test-DllLoad "zlib1.dll"
           Test-DllLoad "zlibd1.dll"
+          if (Test-Path "..\..\_deps") {
+            Remove-Item "..\..\_deps" -Recurse -Force
+            Write-Host "Removed ..\..\_deps for strict portable runtime test"
+          }          
           Get-ChildItem -Force
           $args = @(
                       "--figure", "immigrant",
